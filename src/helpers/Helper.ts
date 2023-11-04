@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 interface UserData {
+  id: number | null;
   name: string | null;
   email: string | null;
   roleId: string | null;
@@ -59,7 +60,6 @@ const ExtractToken = (token: string): UserData | null => {
     if (err) {
       resData = null;
     } else {
-      console.log("decoded" + decoded);
       resData = decoded;
     }
   });

@@ -2,7 +2,9 @@ import express from "express";
 import RoleController from "../controllers/RoleController";
 import UserController from "../controllers/UserController";
 import UserValidation from "../middleware/validation/UserValidation";
+import OperatorController from "../controllers/OperatorController";
 import Authorization from "../middleware/Authorization";
+import MahasiswaController from "../controllers/MahasiswaController";
 
 const router = express.Router();
 
@@ -50,6 +52,32 @@ router.get(
   "/user/logout",
   Authorization.Authenticated,
   UserController.UserLogout
+);
+
+// operator
+router.post(
+  "/csv/uploud",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  OperatorController.UploudCSV
+);
+
+router.get("/uploud/:filename", OperatorController.DownloadCSV);
+
+// mahasiswa
+router.get(
+  "/mahasiswa/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  MahasiswaController.GetMahasiswaByNIM
+);
+router.post(
+  "/mahasiswa/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  MahasiswaController.UpdateData
 );
 
 export default router;

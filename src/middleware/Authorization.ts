@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Helper from "../helpers/Helper";
+import Mahasiswa from "../db/models/Mahasiswa";
 
 const Authenticated = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -13,14 +14,15 @@ const Authenticated = (req: Request, res: Response, next: NextFunction) => {
     }
     // console.log("token" + token);
     const result = Helper.ExtractToken(token!);
-    console.log("result" + result);
     if (!result) {
       return res
         .status(401)
         .send(Helper.ResponseData(401, "Unautorized Boss", null, null));
     }
+    console.log(result);
     res.locals.userEmail = result?.email;
     res.locals.roleId = result?.roleId;
+    res.locals.userId = result?.id;
 
     next();
   } catch (err: any) {
@@ -42,7 +44,7 @@ const SuperAdmin = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const Operator = (res: Response, req: Request, next: NextFunction) => {
+const Operator = (req: Request, res: Response, next: NextFunction) => {
   try {
     const roleId = res.locals.roleId;
     if (roleId != "2") {
@@ -81,7 +83,7 @@ const DosenWali = (req: Request, res: Response, next: NextFunction) => {
     return res.status(500).send(Helper.ResponseData(500, "", error, null));
   }
 };
-const Mahasiswa = (req: Request, res: Response, next: NextFunction) => {
+const MahasiswaAutho = (req: Request, res: Response, next: NextFunction) => {
   try {
     const roleId = res.locals.roleId;
     if (roleId != "5") {
@@ -94,6 +96,68 @@ const Mahasiswa = (req: Request, res: Response, next: NextFunction) => {
     return res.status(500).send(Helper.ResponseData(500, "", error, null));
   }
 };
+// check apakah data mahasiswa sudah lengkap belum
+const MahasiswaDataLengkap = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = res.locals.userId;
+    const dataMahasiswa = await Mahasiswa.findOne({
+      where: { userId: userId },
+    });
+
+    if (dataMahasiswa) {
+      if (
+        dataMahasiswa.NIM &&
+        dataMahasiswa.nama &&
+        dataMahasiswa.angkatan &&
+        dataMahasiswa.status &&
+        dataMahasiswa.photo &&
+        dataMahasiswa.dosenWaliId
+      ) {
+      } else {
+        return res
+          .status(403)
+          .send(
+            Helper.ResponseData(
+              200,
+              "Data Mahasiswa Belum Lengkap Tidak Bisa Melanjutkan Fitur, Harap lengkapi data",
+              null,
+              null
+            )
+          );
+      }
+    }
+    next();
+  } catch (error: any) {
+    return res.status(500).send(Helper.ResponseData(500, "", error, null));
+  }
+};
+
+const MahasiswaNIM = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { NIM } = req.params;
+    const NIMonDataBase = await Mahasiswa.findOne({
+      where: { userId: res.locals.userId },
+    });
+    if (NIMonDataBase?.NIM != NIM) {
+      return res
+        .status(403)
+        .send(Helper.ResponseData(403, "Forbidden", null, null));
+    }
+    console.log(NIMonDataBase?.NIM);
+    console.log(NIM);
+    next();
+  } catch (error: any) {
+    return res.status(500).send(Helper.ResponseData(500, "", error, null));
+  }
+};
 
 export default {
   Authenticated,
@@ -101,5 +165,6 @@ export default {
   Operator,
   Departemen,
   DosenWali,
-  Mahasiswa,
+  MahasiswaAutho,
+  MahasiswaNIM,
 };

@@ -55,6 +55,7 @@ const UserLogin = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const dataUser = {
+      id: user.id,
       name: user.name,
       email: user.email,
       roleId: user.roleId,
@@ -105,6 +106,7 @@ const RefreshToken = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const token = Helper.GenerateToken({
+      id: decodedUser.id,
       name: decodedUser.name,
       email: decodedUser.email,
       roleId: decodedUser.roleId,

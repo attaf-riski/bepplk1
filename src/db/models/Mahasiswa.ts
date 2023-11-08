@@ -5,11 +5,17 @@ import User from "./User";
 interface MahasiswaAttributes {
   NIM?: string | null;
   nama?: string | null;
+  alamat?: string | null;
+  kabkota?: string | null;
+  provinsi?: string | null;
   angkatan?: number | null;
+  jalurMasuk?: string | null;
+  email?: string | null;
+  noHp?: string | null;
+  dosenWaliNIP?: string | null;
   status?: string | null;
   photo?: string | null;
   userId?: number | null;
-  dosenWaliId?: number | null;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -24,11 +30,17 @@ class Mahasiswa
 {
   public NIM!: string | null;
   public nama!: string | null;
+  public alamat!: string | null;
+  public kabkota!: string | null;
+  public provinsi!: string | null;
   public angkatan!: number | null;
+  public jalurMasuk!: string | null;
+  public email!: string | null;
+  public noHp!: string | null;
+  public dosenWaliNIP!: string | null;
   public status!: string | null;
   public photo!: string | null;
   public userId!: number | null;
-  public dosenWaliId!: number | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -44,11 +56,39 @@ Mahasiswa.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    alamat: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    kabkota: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    provinsi: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     angkatan: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    jalurMasuk: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    noHp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    dosenWaliNIP: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -57,10 +97,6 @@ Mahasiswa.init(
       allowNull: true,
     },
     userId: {
-      type: DataTypes.BIGINT,
-      allowNull: true,
-    },
-    dosenWaliId: {
       type: DataTypes.BIGINT,
       allowNull: true,
     },

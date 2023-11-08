@@ -110,19 +110,22 @@ const MahasiswaDataLengkap = async (
 
     if (dataMahasiswa) {
       if (
-        dataMahasiswa.NIM &&
-        dataMahasiswa.nama &&
-        dataMahasiswa.angkatan &&
-        dataMahasiswa.status &&
-        dataMahasiswa.photo &&
-        dataMahasiswa.dosenWaliId
+        dataMahasiswa.nama ||
+        dataMahasiswa.alamat ||
+        dataMahasiswa.kabkota ||
+        dataMahasiswa.provinsi ||
+        dataMahasiswa.angkatan ||
+        dataMahasiswa.jalurMasuk ||
+        dataMahasiswa.email ||
+        dataMahasiswa.noHp ||
+        dataMahasiswa.photo // pengecekan apabila masih default tidak boleh, sekarang boleh dulu
       ) {
       } else {
         return res
           .status(403)
           .send(
             Helper.ResponseData(
-              200,
+              403,
               "Data Mahasiswa Belum Lengkap Tidak Bisa Melanjutkan Fitur, Harap lengkapi data",
               null,
               null
@@ -142,17 +145,18 @@ const MahasiswaNIM = async (
   next: NextFunction
 ) => {
   try {
-    const { NIM } = req.params;
+    let { NIM } = req.params;
     const NIMonDataBase = await Mahasiswa.findOne({
       where: { userId: res.locals.userId },
     });
+    console.log(NIMonDataBase?.NIM);
+    console.log(NIM);
     if (NIMonDataBase?.NIM != NIM) {
       return res
         .status(403)
-        .send(Helper.ResponseData(403, "Forbidden", null, null));
+        .send(Helper.ResponseData(403, "Forbidden NIM", null, null));
     }
-    console.log(NIMonDataBase?.NIM);
-    console.log(NIM);
+
     next();
   } catch (error: any) {
     return res.status(500).send(Helper.ResponseData(500, "", error, null));
@@ -167,4 +171,5 @@ export default {
   DosenWali,
   MahasiswaAutho,
   MahasiswaNIM,
+  MahasiswaDataLengkap,
 };

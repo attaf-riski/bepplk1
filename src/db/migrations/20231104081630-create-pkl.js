@@ -2,19 +2,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Operators", {
-      NIP: {
+    await queryInterface.createTable("pkls", {
+      NIM: {
+        type: Sequelize.STRING,
         primaryKey: true,
+        allowNull: false,
+      },
+      status: {
         type: Sequelize.STRING,
       },
-      nama: {
+      nilai: {
+        type: Sequelize.FLOAT,
+      },
+      scanBeritaAcara: {
         type: Sequelize.STRING,
       },
-      email: {
-        type: Sequelize.STRING,
+      verified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
-      userId: {
-        type: Sequelize.BIGINT,
+      tanggalSidang: {
+        type: Sequelize.DATE,
+      },
+      semesterLulus: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -27,6 +38,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Operators");
+    await queryInterface.dropTable("pkls");
   },
 };

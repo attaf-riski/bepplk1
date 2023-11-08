@@ -1,12 +1,12 @@
 import multer from "multer";
 import path from "path";
 import util from "util";
-const maxSize = 2 * 1024 * 1024;
+const maxSize = 2 * 1024 * 1024 * 1024;
 
 // konfigurasi multer
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join("uploud"));
+    cb(null, path.join("pdf"));
   },
   filename: function (req, file, cb) {
     cb(
@@ -20,10 +20,14 @@ let uploadFile = multer({
   storage: storage,
   limits: { fileSize: maxSize },
   fileFilter: function (req, file, cb) {
-    file.mimetype === "text/csv" ? cb(null, true) : cb(null, false);
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
   },
-}).single("file");
+}).single("pdf");
 
-let uploadFileMiddleware = util.promisify(uploadFile);
+let uploadPDFMiddleware = util.promisify(uploadFile);
 
-export default uploadFileMiddleware;
+export default uploadPDFMiddleware;

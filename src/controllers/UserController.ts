@@ -81,7 +81,7 @@ const UserLogin = async (req: Request, res: Response): Promise<Response> => {
 
     return res
       .status(200)
-      .send(Helper.ResponseData(200, "User OK", responseUser, null));
+      .send(Helper.ResponseData(200, "User OK", null, responseUser));
   } catch (error: any) {
     return res
       .status(500)

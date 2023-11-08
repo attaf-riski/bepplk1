@@ -2,10 +2,11 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Operators", {
-      NIP: {
-        primaryKey: true,
+    await queryInterface.createTable("departemens", {
+      NID: {
         type: Sequelize.STRING,
+        allowNull: false,
+        primaryKey: true,
       },
       nama: {
         type: Sequelize.STRING,
@@ -14,7 +15,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       userId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -27,6 +28,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Operators");
+    await queryInterface.dropTable("departemens");
   },
 };

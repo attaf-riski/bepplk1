@@ -10,8 +10,29 @@ module.exports = {
       nama: {
         type: Sequelize.STRING,
       },
+      alamat: {
+        type: Sequelize.STRING,
+      },
+      kabkota: {
+        type: Sequelize.STRING,
+      },
+      provinsi: {
+        type: Sequelize.STRING,
+      },
       angkatan: {
         type: Sequelize.INTEGER,
+      },
+      jalurMasuk: {
+        type: Sequelize.STRING,
+      },
+      email: {
+        type: Sequelize.STRING,
+      },
+      noHp: {
+        type: Sequelize.STRING,
+      },
+      dosenWaliNIP: {
+        type: Sequelize.BIGINT,
       },
       status: {
         type: Sequelize.STRING,
@@ -20,9 +41,6 @@ module.exports = {
         type: Sequelize.TEXT,
       },
       userId: {
-        type: Sequelize.BIGINT,
-      },
-      dosenWaliId: {
         type: Sequelize.BIGINT,
       },
       createdAt: {

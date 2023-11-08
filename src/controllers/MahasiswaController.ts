@@ -1,6 +1,8 @@
+import IRS from "../db/models/IRS";
 import Mahasiswa from "../db/models/Mahasiswa";
 import Helper from "../helpers/Helper";
 import { Request, Response } from "express";
+import uploadImage from "../middleware/UploudImage";
 
 const GetMahasiswaByNIM = async (
   req: Request,
@@ -20,7 +22,7 @@ const GetMahasiswaByNIM = async (
       status: dataMahasiswa?.status,
       photo: dataMahasiswa?.photo,
       userId: dataMahasiswa?.userId,
-      dosenWaliId: dataMahasiswa?.dosenWaliId,
+      dosenWaliNIP: dataMahasiswa?.dosenWaliNIP,
     };
 
     if (!dataMahasiswa) {
@@ -53,11 +55,14 @@ const GetMahasiswaByNIM = async (
   }
 };
 
-const UpdateData = async (req: Request, res: Response): Promise<Response> => {
+const UpdataDataPhoto = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const { NIM } = req.params;
-  const { nama, status, photoUrl } = req.body;
 
   try {
+    await uploadImage(req, res);
     const dataMahasiswa = await Mahasiswa.findOne({
       where: { NIM: NIM },
     });
@@ -68,12 +73,50 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
         .send(Helper.ResponseData(404, "Unauthorized", null, null));
     }
 
+    if (req.file == undefined) {
+      return res
+        .status(400)
+        .send({ message: "Please upload an image for photo profile!" });
+    }
+
     const data = {
-      nama: nama,
-      status: status,
-      photoUrl: photoUrl,
+      photo: req.file.filename,
     };
 
+    await Mahasiswa.update(data, {
+      where: { NIM: NIM },
+    });
+
+    return res
+      .status(200)
+      .send(Helper.ResponseData(200, "Photo Berhasil Di Uploud", null, data));
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mengubah photo mahasiswa dengan NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const UpdateData = async (req: Request, res: Response): Promise<Response> => {
+  const { NIM } = req.params;
+  const { nama, alamat, kabkota, provinsi, jalurMasuk, noHP } = req.body;
+
+  try {
+    const data = {
+      nama: nama,
+      alamat: alamat,
+      kabkota: kabkota,
+      provinsi: provinsi,
+      jalurMasuk: jalurMasuk,
+      noHP: noHP,
+    };
     await Mahasiswa.update(data, {
       where: { NIM: NIM },
     });
@@ -101,4 +144,5 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
       );
   }
 };
-export default { UpdateData, GetMahasiswaByNIM };
+
+export default { UpdateData, GetMahasiswaByNIM, UpdataDataPhoto, };

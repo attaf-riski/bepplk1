@@ -13,6 +13,7 @@ let dataKembar: any = [];
 let csvData: any = [];
 let generateFileName: any = "";
 const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
+  generateFileName = "generate-" + Date.now() + ".csv";
   try {
     await uploadFile(req, res);
 
@@ -20,27 +21,32 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
       return res.status(400).send({ message: "Please upload a csv file!" });
     }
 
-    const namaPath = "uploud/" + req.file.filename;
+    const namaPath = req.file.path;
     const hashed = await PasswordHelper.PasswrodHashing("12345678");
     fs.createReadStream(namaPath)
       .on("error", (err) => {
         console.log(err);
       })
 
-      .pipe(csvv(["NIM", "Nama", "Angkatan", "IdDosenWali"]))
+      .pipe(csvv(["NIM", "Nama", "Angkatan", "NIPDosenWali"]))
       .on("data", (data: any) => {
         const namaTrim: string = data.Nama.replace(/\s/g, "");
         if (data.NIM.length > 0) {
           csvData.push({
             NIM: data.NIM,
             nama: data.Nama,
+            alamat: "",
+            kabkota: "",
+            provinsi: "",
             angkatan: data.Angkatan,
+            jalurMasuk: "",
+            email: namaTrim + Date.now() + "@students.undip.ac.id",
+            noHp: "",
             status: "Aktif",
             photo:
               "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png",
-            dosenWaliId: data.IdDosenWali,
+            dosenWaliNIP: data.NIPDosenWali,
             name: data.Nama,
-            email: namaTrim + "@students.undip.ac.id",
             roleId: 5,
             password: hashed,
             verified: true,
@@ -97,9 +103,9 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
           //jadikan csvData menjadi file csv yang baru
           const json2csvParser = new json2csv.Parser();
           const csv = json2csvParser.parse(newCsvData);
-          generateFileName = "uploud/generate-" + Date.now() + ".csv";
-          fs.writeFile(generateFileName, csv, (err) => {
+          fs.writeFile("uploud/" + generateFileName, csv, (err) => {
             if (err) throw err;
+            console.log("Berhasil membuat file csv");
           });
           fs.unlinkSync(namaPath);
         }
@@ -107,7 +113,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
     if (dataKembar.length > 0) {
       const buffer = {
         ...dataKembar,
-        link: path.join("http://localhost/" + generateFileName),
+        link: generateFileName,
       };
       dataKembar = [];
       return res
@@ -125,7 +131,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
     console.log("generated " + generateFileName);
     if (generateFileName.length > 0) {
       const linkDownload = {
-        link: path.join("http://localhost:5502/" + generateFileName),
+        link: generateFileName,
       };
       return res
         .status(200)
@@ -165,15 +171,21 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
 
 const DownloadCSV = async (req: Request, res: Response): Promise<Response> => {
   const { filename } = req.params;
-  const file = path.join("uploud/" + filename);
-  res.contentType("text/csv");
-  res.sendFile(file);
-  fs.unlinkSync(file);
-  return res
-    .status(200)
-    .send(
-      Helper.ResponseData(200, "Berhasil mendownload file csv", null, null)
-    );
+  const fileLocation = path.join("uploud/" + filename);
+  const fileExist = fs.existsSync(fileLocation);
+  if (!fileExist) {
+    return res
+      .status(404)
+      .send(Helper.ResponseData(404, "File tidak ditemukan", null, null));
+  }
+
+  // kirimkan file di folder uploud sesuai nama filename ke user dalam bentuk file csv
+  console.log(fileLocation);
+  const file = fs.createReadStream(fileLocation);
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", "attachment; filename=" + filename);
+  file.pipe(res);
+  return res.status(200);
 };
 
 export default { UploudCSV, DownloadCSV };

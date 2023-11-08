@@ -5,6 +5,11 @@ import UserValidation from "../middleware/validation/UserValidation";
 import OperatorController from "../controllers/OperatorController";
 import Authorization from "../middleware/Authorization";
 import MahasiswaController from "../controllers/MahasiswaController";
+import IRSController from "../controllers/IRSController";
+import KHSController from "../controllers/KHSController";
+import PKL from "../db/models/PKL";
+import PKLController from "../controllers/PKLController";
+import SkripsiController from "../controllers/SkripsiController";
 
 const router = express.Router();
 
@@ -62,6 +67,7 @@ router.post(
   OperatorController.UploudCSV
 );
 
+// file uploud download
 router.get("/uploud/:filename", OperatorController.DownloadCSV);
 
 // mahasiswa
@@ -79,5 +85,175 @@ router.post(
   Authorization.MahasiswaNIM,
   MahasiswaController.UpdateData
 );
+
+router.post(
+  "/mahasiswa/image/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  MahasiswaController.UpdataDataPhoto
+);
+
+// irs
+router.post(
+  "/irs/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  IRSController.CreateDataIRS
+);
+
+router.post(
+  "/irs/update/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  IRSController.UpdateDataIRS
+);
+
+router.post(
+  "/irs/scan/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  IRSController.CreateIRSScanIRS
+);
+
+router.get(
+  "/irs/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  IRSController.GetIRSByNIMSemester
+);
+
+router.get(
+  "/irs/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  KHSController.GetKHSAllByNIM
+);
+
+// khs
+router.post(
+  "/khs/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  KHSController.CreateDataKHS
+);
+
+router.post(
+  "/khs/update/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  KHSController.UpdateDataKHS
+);
+
+router.post(
+  "/khs/scan/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  KHSController.CreateKHSScanKHS
+);
+
+router.get(
+  "/khs/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  KHSController.GetKHSByNIMSemester
+);
+
+router.get(
+  "/khs/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  KHSController.GetKHSAllByNIM
+);
+
+router.get(
+  "/khs/pdf/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM
+);
+
+// PKL
+router.post(
+  "/pkl/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  PKLController.CreateDataPKL
+);
+
+router.post(
+  "/pkl/update/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  PKLController.UpdateDataPKL
+);
+
+router.post(
+  "/pkl/scan/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  PKLController.CreatePKLScanBeritaAcara
+);
+
+router.get(
+  "/pkl/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  PKLController.GetPKLByNIM
+);
+
+// skripsi
+router.post(
+  "/skrips/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  SkripsiController.CreateDataSkripsi
+);
+
+router.post(
+  "/skripsi/update/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  SkripsiController.UpdateDataSkripsi
+);
+
+router.post(
+  "/skripsi/scan/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  SkripsiController.CreateSkripsiScanBeritaAcara
+);
+
+router.get(
+  "/skripsi/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  Authorization.MahasiswaNIM,
+  SkripsiController.GetSkripsiByNIM
+);
+
+// verifikasi dosen wali thd data mahasiswa wali
+// get semua IRS yang belum diverifikasi dosen wali
+// get semua KHS yang belum diverifikasi dosen wali
+// get semya pkl yangbelum diverifikasi dosenwali
+// get semua skripsi yang belum diverifikasi dosen wali
+
 
 export default router;

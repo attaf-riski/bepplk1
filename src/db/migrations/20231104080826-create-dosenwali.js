@@ -2,10 +2,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Operators", {
+    await queryInterface.createTable("dosenwalis", {
       NIP: {
-        primaryKey: true,
         type: Sequelize.STRING,
+        primaryKey: true,
+        allowNull: false,
+        size: 20,
       },
       nama: {
         type: Sequelize.STRING,
@@ -14,8 +16,9 @@ module.exports = {
         type: Sequelize.STRING,
       },
       userId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.STRING,
       },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -27,6 +30,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Operators");
+    await queryInterface.dropTable("dosenwalis");
   },
 };

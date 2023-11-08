@@ -2,7 +2,7 @@ import { Optional, DataTypes, Model } from "sequelize";
 import connection from "../../config/dbConnect";
 import User from "./User";
 
-interface OperatorAttributes {
+interface DosenWaliAttributes {
   NIP?: string | null;
   nama?: string | null;
   email?: string | null;
@@ -12,28 +12,28 @@ interface OperatorAttributes {
   updatedAt?: Date;
 }
 
-export interface OperatorInput extends Optional<OperatorAttributes, "NIP"> {}
-export interface OperatorOutput extends Required<OperatorAttributes> {}
+export interface DosenWaliInput extends Optional<DosenWaliAttributes, "NIP"> {}
+export interface DosenWaliOutput extends Required<DosenWaliAttributes> {}
 
-class Operator
-  extends Model<OperatorAttributes, OperatorInput>
-  implements OperatorAttributes
+class DosenWali
+  extends Model<DosenWaliAttributes, DosenWaliInput>
+  implements DosenWaliAttributes
 {
-  public NIP?: string | null;
-  public nama?: string | null;
-  public email?: string | null;
-  public userId?: number | null;
+  public NIP!: string | null;
+  public nama!: string | null;
+  public email!: string | null;
+  public userId!: number | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
 
-Operator.init(
+DosenWali.init(
   {
     NIP: {
+      primaryKey: true,
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true,
     },
     nama: {
       type: DataTypes.STRING,
@@ -55,8 +55,8 @@ Operator.init(
   }
 );
 
-Operator.belongsTo(User, {
+DosenWali.belongsTo(User, {
   foreignKey: "userId",
 });
 
-export default Operator;
+export default DosenWali;

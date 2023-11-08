@@ -2,8 +2,8 @@ import { Optional, DataTypes, Model } from "sequelize";
 import connection from "../../config/dbConnect";
 import User from "./User";
 
-interface OperatorAttributes {
-  NIP?: string | null;
+interface DepartemenAttributes {
+  NID?: string | null;
   nama?: string | null;
   email?: string | null;
   userId?: number | null;
@@ -12,14 +12,15 @@ interface OperatorAttributes {
   updatedAt?: Date;
 }
 
-export interface OperatorInput extends Optional<OperatorAttributes, "NIP"> {}
-export interface OperatorOutput extends Required<OperatorAttributes> {}
+export interface DepartemenInput
+  extends Optional<DepartemenAttributes, "NID"> {}
+export interface DepartemenOutput extends Required<DepartemenAttributes> {}
 
-class Operator
-  extends Model<OperatorAttributes, OperatorInput>
-  implements OperatorAttributes
+class Departemen
+  extends Model<DepartemenAttributes, DepartemenInput>
+  implements DepartemenAttributes
 {
-  public NIP?: string | null;
+  public NID?: string | null;
   public nama?: string | null;
   public email?: string | null;
   public userId?: number | null;
@@ -28,9 +29,9 @@ class Operator
   public readonly updatedAt!: Date;
 }
 
-Operator.init(
+Departemen.init(
   {
-    NIP: {
+    NID: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
@@ -55,8 +56,8 @@ Operator.init(
   }
 );
 
-Operator.belongsTo(User, {
+Departemen.belongsTo(User, {
   foreignKey: "userId",
 });
 
-export default Operator;
+export default Departemen;

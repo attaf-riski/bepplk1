@@ -117,7 +117,7 @@ const MahasiswaDataLengkap = async (
         dataMahasiswa.angkatan ||
         dataMahasiswa.jalurMasuk ||
         dataMahasiswa.email ||
-        dataMahasiswa.noHp ||
+        dataMahasiswa.noHP ||
         dataMahasiswa.photo // pengecekan apabila masih default tidak boleh, sekarang boleh dulu
       ) {
       } else {

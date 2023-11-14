@@ -80,7 +80,7 @@ const UpdataDataPhoto = async (
     }
 
     const data = {
-      photo: req.file.filename,
+      photo: "http://localhost:5502/images/" + req.file.filename,
     };
 
     await Mahasiswa.update(data, {
@@ -106,7 +106,8 @@ const UpdataDataPhoto = async (
 
 const UpdateData = async (req: Request, res: Response): Promise<Response> => {
   const { NIM } = req.params;
-  const { nama, alamat, kabkota, provinsi, jalurMasuk, noHP } = req.body;
+  const { nama, alamat, kabkota, provinsi, jalurMasuk, noHP, email, status } =
+    req.body;
 
   try {
     const data = {
@@ -116,6 +117,8 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
       provinsi: provinsi,
       jalurMasuk: jalurMasuk,
       noHP: noHP,
+      email: email,
+      status: status,
     };
     await Mahasiswa.update(data, {
       where: { NIM: NIM },
@@ -145,4 +148,73 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-export default { UpdateData, GetMahasiswaByNIM, UpdataDataPhoto, };
+const GetMahasiswaByUserId = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { userid } = req.params;
+
+  try {
+    const dataMahasiswa = await Mahasiswa.findOne({
+      where: { userId: userid },
+    });
+
+    const data = {
+      NIM: dataMahasiswa?.NIM,
+      nama: dataMahasiswa?.nama,
+      alamat: dataMahasiswa?.alamat,
+      kabkota: dataMahasiswa?.kabkota,
+      provinsi: dataMahasiswa?.provinsi,
+      angkatan: dataMahasiswa?.angkatan,
+      jalurMasuk: dataMahasiswa?.jalurMasuk,
+      email: dataMahasiswa?.email,
+      noHP: dataMahasiswa?.noHP,
+      status: dataMahasiswa?.status,
+      photo: dataMahasiswa?.photo,
+      userId: dataMahasiswa?.userId,
+      dosenWaliNIP: dataMahasiswa?.dosenWaliNIP,
+    };
+
+    if (!dataMahasiswa) {
+      return res
+        .status(403)
+        .send(
+          Helper.ResponseData(
+            403,
+            "Unauthorized For Get Data Mahasiwa",
+            null,
+            null
+          )
+        );
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data mahasiswa dengan NIM " + userid,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data mahasiswa dengan NIM " + userid,
+          err,
+          null
+        )
+      );
+  }
+};
+
+export default {
+  UpdateData,
+  GetMahasiswaByNIM,
+  UpdataDataPhoto,
+  GetMahasiswaByUserId,
+};

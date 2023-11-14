@@ -11,7 +11,7 @@ interface MahasiswaAttributes {
   angkatan?: number | null;
   jalurMasuk?: string | null;
   email?: string | null;
-  noHp?: string | null;
+  noHP?: string | null;
   dosenWaliNIP?: string | null;
   status?: string | null;
   photo?: string | null;
@@ -36,7 +36,7 @@ class Mahasiswa
   public angkatan!: number | null;
   public jalurMasuk!: string | null;
   public email!: string | null;
-  public noHp!: string | null;
+  public noHP!: string | null;
   public dosenWaliNIP!: string | null;
   public status!: string | null;
   public photo!: string | null;
@@ -80,7 +80,7 @@ Mahasiswa.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    noHp: {
+    noHP: {
       type: DataTypes.STRING,
       allowNull: true,
     },

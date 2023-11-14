@@ -25,8 +25,10 @@ app.get("/", (req: Request, res: Response) => {
   return res.send({ response: "Hello World - Typescript" });
 });
 // oranglain masih bisa melihat photo dan pdf karena belum di authorisasi
-app.use("/images", Authorization.Authenticated, express.static("images"));
-app.use("/pdf", Authorization.Authenticated, express.static("pdf"));
+app.use("/images", express.static("images"));
+// masih bisa melihat pdf karena belum di authorisasi
+// irs, khs, berita acara pkl, dan skripsi bocor
+app.use("/pdf", express.static("pdf"));
 app.use(router);
 
 app.listen(process.env.APP_PORT, () => {

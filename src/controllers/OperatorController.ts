@@ -11,9 +11,9 @@ import json2csv from "json2csv";
 
 let dataKembar: any = [];
 let csvData: any = [];
-let generateFileName: any = "";
+
 const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
-  generateFileName = "generate-" + Date.now() + ".csv";
+  let generateFileName = "generate-" + Date.now() + ".csv";
   try {
     await uploadFile(req, res);
 
@@ -30,6 +30,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
 
       .pipe(csvv(["NIM", "Nama", "Angkatan", "NIPDosenWali"]))
       .on("data", (data: any) => {
+        const random = Math.floor(1000 + Math.random() * 9000);
         const namaTrim: string = data.Nama.replace(/\s/g, "");
         if (data.NIM.length > 0) {
           csvData.push({
@@ -40,13 +41,13 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
             provinsi: "",
             angkatan: data.Angkatan,
             jalurMasuk: "",
-            email: namaTrim + Date.now() + "@students.undip.ac.id",
+            email: "",
             noHp: "",
             status: "Aktif",
             photo:
               "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png",
             dosenWaliNIP: data.NIPDosenWali,
-            name: data.Nama,
+            username: "MA" + namaTrim + random,
             roleId: 5,
             password: hashed,
             verified: true,
@@ -77,7 +78,6 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
             },
           });
           if (mhs) {
-            console.log("Sudah ada " + mhs.NIM);
             dataKembar.push(csvDataBuffer[i]);
             User.destroy({
               where: {
@@ -85,18 +85,17 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
               },
             });
           } else {
-            console.log("Belum ada ");
             csvBerhasilAkanDikirim.push(csvDataBuffer[i]);
             await Mahasiswa.create(csvDataBuffer[i]);
           }
         }
-
         if (csvBerhasilAkanDikirim.length > 0) {
+          // ada csv yang harus digenerate, walaupun engga semua
           const newCsvData = csvBerhasilAkanDikirim.map((item: any) => {
             return {
               NIM: item.NIM,
-              name: item.name,
-              email: item.email,
+              nama: item.nama,
+              username: item.username,
               password: "12345678",
             };
           });
@@ -105,56 +104,19 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
           const csv = json2csvParser.parse(newCsvData);
           fs.writeFile("uploud/" + generateFileName, csv, (err) => {
             if (err) throw err;
-            console.log("Berhasil membuat file csv");
           });
-          fs.unlinkSync(namaPath);
+        } else {
+          // tidak ada csv yang harus digenerate
         }
+        fs.unlinkSync(namaPath);
       });
-    if (dataKembar.length > 0) {
-      const buffer = {
-        ...dataKembar,
-        link: generateFileName,
-      };
-      dataKembar = [];
-      return res
-        .status(200)
-        .send(
-          Helper.ResponseData(
-            200,
-            "Terdapat data Mahasiswa yang sudah ada, data mahasiswa selain data yang sudah ada berhasil di tambahkan",
-            null,
-            buffer
-          )
-        );
-    }
 
-    console.log("generated " + generateFileName);
-    if (generateFileName.length > 0) {
-      const linkDownload = {
-        link: generateFileName,
-      };
-      return res
-        .status(200)
-        .send(
-          Helper.ResponseData(
-            200,
-            "Berhasil menambahkan data mahasiswa dari csv dan mendownload csv akses akun",
-            null,
-            linkDownload
-          )
-        );
-    } else {
-      return res
-        .status(200)
-        .send(
-          Helper.ResponseData(
-            200,
-            "Berhasil menambahkan data mahasiswa tapi belum bisa generate csv akses akun",
-            null,
-            null
-          )
-        );
-    }
+    const respon = {
+      link: generateFileName,
+    };
+    return res
+      .status(200)
+      .send(Helper.ResponseData(200, "Sukses", null, respon));
   } catch (err: any) {
     return res
       .status(500)
@@ -188,4 +150,15 @@ const DownloadCSV = async (req: Request, res: Response): Promise<Response> => {
   return res.status(200);
 };
 
-export default { UploudCSV, DownloadCSV };
+const DeleteCSV = async (req: Request, res: Response) => {
+  const { filename } = req.params;
+  const fileLocation = path.join("uploud/" + filename);
+  const fileExist = fs.existsSync(fileLocation);
+  if (fileExist) {
+    fs.unlinkSync(fileLocation);
+    return;
+  }
+  return;
+};
+
+export default { UploudCSV, DownloadCSV, DeleteCSV };

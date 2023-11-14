@@ -4,7 +4,7 @@ import Role from "./Role";
 
 interface UserAttributes {
   id?: number;
-  name?: string | null;
+  username?: string | null;
   email?: string | null;
   roleId?: number | null;
   password?: string | null;
@@ -21,7 +21,7 @@ export interface UserOutput extends Required<UserAttributes> {}
 
 class User extends Model<UserAttributes, UserInput> implements UserAttributes {
   public id!: number;
-  public name!: string;
+  public username!: string;
   public email!: string;
   public roleId!: number;
   public password!: string;
@@ -40,7 +40,7 @@ User.init(
       autoIncrement: true,
       allowNull: false,
     },
-    name: {
+    username: {
       type: DataTypes.STRING,
       allowNull: true,
     },

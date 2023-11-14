@@ -69,15 +69,24 @@ router.post(
 
 // file uploud download
 router.get("/uploud/:filename", OperatorController.DownloadCSV);
+router.delete("/uploud/:filename", OperatorController.DeleteCSV);
 
 // mahasiswa
+// router.get(
+//   "/mahasiswa/:NIM",
+//   Authorization.Authenticated,
+//   Authorization.MahasiswaAutho,
+//   Authorization.MahasiswaNIM,
+//   MahasiswaController.GetMahasiswaByNIM
+// );
+
 router.get(
-  "/mahasiswa/:NIM",
+  "/mahasiswa/:userid",
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
-  MahasiswaController.GetMahasiswaByNIM
+  MahasiswaController.GetMahasiswaByUserId
 );
+
 router.post(
   "/mahasiswa/:NIM",
   Authorization.Authenticated,
@@ -132,6 +141,7 @@ router.get(
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
   Authorization.MahasiswaNIM,
+  Authorization.MahasiswaDataLengkap,
   KHSController.GetKHSAllByNIM
 );
 
@@ -254,6 +264,5 @@ router.get(
 // get semua KHS yang belum diverifikasi dosen wali
 // get semya pkl yangbelum diverifikasi dosenwali
 // get semua skripsi yang belum diverifikasi dosen wali
-
 
 export default router;

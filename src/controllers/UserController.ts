@@ -7,10 +7,10 @@ import Role from "../db/models/Role";
 
 const Register = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { name, email, password, roleId, confirmPassword } = req.body;
+    const { username, email, password, roleId, confirmPassword } = req.body;
     const hashed = await PasswordHelper.PasswrodHashing(password);
     const user = await User.create({
-      name,
+      username,
       email,
       password: hashed,
       active: true,
@@ -30,10 +30,10 @@ const Register = async (req: Request, res: Response): Promise<Response> => {
 
 const UserLogin = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     const user = await User.findOne({
       where: {
-        email: email,
+        username: username,
       },
     });
 
@@ -56,7 +56,7 @@ const UserLogin = async (req: Request, res: Response): Promise<Response> => {
 
     const dataUser = {
       id: user.id,
-      name: user.name,
+      username: user.username,
       email: user.email,
       roleId: user.roleId,
       verified: user.verified,

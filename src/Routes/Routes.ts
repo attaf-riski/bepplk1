@@ -129,7 +129,7 @@ router.post(
 );
 
 router.get(
-  "/irs/:NIM&:semesterAktif",
+  "/irs/detail/:NIM&:semesterAktif",
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
   Authorization.MahasiswaNIM,
@@ -141,8 +141,8 @@ router.get(
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
   Authorization.MahasiswaNIM,
-  Authorization.MahasiswaDataLengkap,
-  KHSController.GetKHSAllByNIM
+  // Authorization.MahasiswaDataLengkap,
+  IRSController.GetIRSAllByNIM
 );
 
 // khs
@@ -171,7 +171,7 @@ router.post(
 );
 
 router.get(
-  "/khs/:NIM&:semesterAktif",
+  "/khs/detail/:NIM&:semesterAktif",
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
   Authorization.MahasiswaNIM,

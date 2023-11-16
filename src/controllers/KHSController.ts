@@ -10,7 +10,7 @@ const CreateDataKHS = async (
   res: Response
 ): Promise<Response> => {
   const { NIM } = req.params;
-  const { semesterAktif, jumlahSksSemester, jumlahSKsKumulatif, IPS, IPK } =
+  const { semesterAktif, jumlahSksSemester, jumlahSksKumulatif, IPS, IPK } =
     req.body;
   try {
     const dataMahasiswa = await Mahasiswa.findOne({
@@ -48,7 +48,7 @@ const CreateDataKHS = async (
       NIM: NIM,
       semesterAktif: semesterAktif,
       jumlahSksSemester: jumlahSksSemester,
-      jumlahSksKumulatif: jumlahSKsKumulatif,
+      jumlahSksKumulatif: jumlahSksKumulatif,
       IPS: IPS,
       IPK: IPK,
       scanKHS: "",

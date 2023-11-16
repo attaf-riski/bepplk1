@@ -20,7 +20,14 @@ let uploadFile = multer({
   storage: storage,
   limits: { fileSize: maxSize },
   fileFilter: function (req, file, cb) {
-    file.mimetype === "text/csv" ? cb(null, true) : cb(null, false);
+    if (
+      file.mimetype === "text/csv" ||
+      file.mimetype === "application/vnd.ms-excel"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
   },
 }).single("file");
 

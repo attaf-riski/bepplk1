@@ -5,7 +5,7 @@ import Mahasiswa from "./Mahasiswa";
 interface SkripsiAttributes {
   NIM?: string | null;
   status?: string | null;
-  nilai?: number | null;
+  nilai?: string | null;
   tanggalSidang?: Date | null;
   lamaStudi?: number | null;
   scanBeritaAcara?: string | null;
@@ -24,7 +24,7 @@ class Skripsi
 {
   public NIM!: string;
   public status!: string;
-  public nilai!: number;
+  public nilai!: string;
   public tanggalSidang!: Date;
   public lamaStudi!: number;
   public scanBeritaAcara!: string;
@@ -46,7 +46,7 @@ Skripsi.init(
       allowNull: false,
     },
     nilai: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     tanggalSidang: {

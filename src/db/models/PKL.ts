@@ -5,7 +5,7 @@ import Mahasiswa from "./Mahasiswa";
 interface PKLAttributes {
   NIM?: string | null;
   status?: string | null;
-  nilai?: number | null;
+  nilai?: string | null;
   scanBeritaAcara?: string | null;
   verified?: boolean | null;
   tanggalSidang?: Date | null;
@@ -21,7 +21,7 @@ export interface PKLOutput extends Required<PKLAttributes> {}
 class PKL extends Model<PKLAttributes, PKLInput> implements PKLAttributes {
   public NIM!: string;
   public status!: string;
-  public nilai!: number;
+  public nilai!: string;
   public scanBeritaAcara!: string;
   public verified!: boolean;
   public tanggalSidang!: Date;
@@ -43,7 +43,7 @@ PKL.init(
       allowNull: false,
     },
     nilai: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     scanBeritaAcara: {

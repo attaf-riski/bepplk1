@@ -40,7 +40,7 @@ const UserLogin = async (req: Request, res: Response): Promise<Response> => {
     if (!user) {
       return res
         .status(401)
-        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+        .send(Helper.ResponseData(401, "Unauthorized 1", null, null));
     }
 
     const matched = await PasswordHelper.PasswordCompare(
@@ -51,7 +51,7 @@ const UserLogin = async (req: Request, res: Response): Promise<Response> => {
     if (!matched) {
       return res
         .status(401)
-        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+        .send(Helper.ResponseData(401, "Unauthorized 2", null, null));
     }
 
     const dataUser = {

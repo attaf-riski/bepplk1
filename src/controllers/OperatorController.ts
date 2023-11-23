@@ -42,7 +42,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
             angkatan: data.Angkatan,
             jalurMasuk: "",
             email: "",
-            noHp: "",
+            noHP: "",
             status: "Aktif",
             photo:
               "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png",

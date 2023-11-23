@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Helper from "../helpers/Helper";
 import Mahasiswa from "../db/models/Mahasiswa";
+import DosenWali from "../db/models/DosenWali";
 
 const Authenticated = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -70,7 +71,7 @@ const Departemen = (req: Request, res: Response, next: NextFunction) => {
     return res.status(500).send(Helper.ResponseData(500, "", error, null));
   }
 };
-const DosenWali = (req: Request, res: Response, next: NextFunction) => {
+const DosenWaliAutho = (req: Request, res: Response, next: NextFunction) => {
   try {
     const roleId = res.locals.roleId;
     if (roleId != "4") {
@@ -163,13 +164,59 @@ const MahasiswaNIM = async (
   }
 };
 
+const DoswalNIP = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    let { NIP } = req.params;
+    const NIPondatabase = await DosenWali.findOne({
+      where: { userId: res.locals.userId },
+    });
+    if (NIPondatabase?.NIP != NIP) {
+      return res
+        .status(403)
+        .send(Helper.ResponseData(403, "Forbidden", null, null));
+    }
+
+    next();
+  } catch (error: any) {
+    return res.status(500).send(Helper.ResponseData(500, "", error, null));
+  }
+};
+
+const DosenWaliNIPonMahasiswa = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let { NIM } = req.params;
+    const NIMonDataBase = await Mahasiswa.findOne({
+      where: { NIM: NIM },
+    });
+    const NIPonDataBase = await DosenWali.findOne({
+      where: { userId: res.locals.userId },
+    });
+
+    if (NIPonDataBase?.NIP != NIMonDataBase?.dosenWaliNIP) {
+      return res
+        .status(403)
+        .send(Helper.ResponseData(403, "Forbidden NIP", null, null));
+    }
+
+    next();
+  } catch (error: any) {
+    return res.status(500).send(Helper.ResponseData(500, "", error, null));
+  }
+};
+
 export default {
   Authenticated,
   SuperAdmin,
   Operator,
   Departemen,
-  DosenWali,
+  DosenWaliAutho,
+  DoswalNIP,
   MahasiswaAutho,
   MahasiswaNIM,
   MahasiswaDataLengkap,
+  DosenWaliNIPonMahasiswa,
 };

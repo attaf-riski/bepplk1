@@ -367,10 +367,60 @@ const CreateSkripsiScanBeritaAcara = async (
   }
 };
 
+const approveSkripsi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+  const { statusApprove } = req.body;
+  try {
+    const dataSkripsi = await Skripsi.findOne({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    if (!dataSkripsi) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(404, "Data Skripsi untuk tidak ada", null, null)
+        );
+    }
+
+    dataSkripsi.verified = statusApprove;
+
+    await dataSkripsi.save();
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil approve data Skripsi semester untuk NIM " + NIM,
+          null,
+          dataSkripsi
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal approve data Skripsi semester untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateDataSkripsi,
   UpdateDataSkripsi,
   GetSkripsiByNIM,
-  CreateSkripsiScanSkripsi, 
+  CreateSkripsiScanSkripsi,
   CreateSkripsiScanBeritaAcara,
+  approveSkripsi,
 };

@@ -3,6 +3,7 @@ import PKL from "../db/models/PKL";
 import Mahasiswa from "../db/models/Mahasiswa";
 import Helper from "../helpers/Helper";
 import uploadPDF from "../middleware/UploudPDF";
+import { Op } from "sequelize";
 
 const CreateDataPKL = async (
   req: Request,
@@ -46,11 +47,11 @@ const CreateDataPKL = async (
 
     // pengecekan status: belum ambil, sedang ambil, lulus
     if (status == "belum ambil") {
-      dataMasukkanPKL.nilai = 0;
+      dataMasukkanPKL.nilai = "Kosong";
       dataMasukkanPKL.tanggalSidang = Date.now();
       dataMasukkanPKL.semesterLulus = 0;
     } else if (status == "sedang ambil") {
-      dataMasukkanPKL.nilai = 0;
+      dataMasukkanPKL.nilai = "Kosong";
       dataMasukkanPKL.tanggalSidang = Date.now();
       dataMasukkanPKL.semesterLulus = 0;
     } else if (status == "lulus") {
@@ -187,13 +188,15 @@ const UpdateDataPKL = async (
       scanBeritaAcara: "",
     };
 
+    console.log(data);
+
     // pengecekan status: belum ambil, sedang ambil, lulus
     if (status == "belum ambil") {
-      data.nilai = 0;
+      data.nilai = "Kosong";
       data.tanggalSidang = Date.now();
       data.semesterLulus = 0;
     } else if (status == "sedang ambil") {
-      data.nilai = 0;
+      data.nilai = "Kosong";
       data.tanggalSidang = Date.now();
       data.semesterLulus = 0;
     } else if (status == "lulus") {
@@ -362,10 +365,105 @@ const CreatePKLScanBeritaAcara = async (
   }
 };
 
+const approvePKL = async (req: Request, res: Response): Promise<Response> => {
+  const { NIM } = req.params;
+  const { statusApprove } = req.body;
+  try {
+    const dataPKL = await PKL.findOne({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    if (!dataPKL) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Data PKL untuk tidak ada", null, null));
+    }
+
+    dataPKL.verified = statusApprove;
+
+    await dataPKL.save();
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil approve data PKL semester untuk NIM " + NIM,
+          null,
+          dataPKL
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal approve data PKL semester untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const GetPKLByNIMNotVerified = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+  try {
+    const dataIRS = await PKL.findAll({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { verified: false }],
+      },
+    });
+
+    if (!dataIRS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data KHS untuk NIM " + NIM + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data KHS untuk NIM " + NIM,
+          null,
+          dataIRS
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data PKL untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
+  approvePKL,
   CreateDataPKL,
   UpdateDataPKL,
   GetPKLByNIM,
   CreatePKLScanPKL,
   CreatePKLScanBeritaAcara,
+  GetPKLByNIMNotVerified,
 };

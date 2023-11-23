@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       nilai: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.STRING,
       },
       scanBeritaAcara: {
         type: Sequelize.STRING,

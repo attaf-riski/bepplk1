@@ -366,10 +366,124 @@ const GetIRSAllByNIM = async (
   }
 };
 
+const approveIRS = async (req: Request, res: Response): Promise<Response> => {
+  const { NIM, semesterAktif } = req.params;
+  const { statusApprove } = req.body;
+  try {
+    const dataIRS = await IRS.findOne({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    if (!dataIRS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data IRS untuk semester " + semesterAktif + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    const data = {
+      verified: statusApprove,
+    };
+
+    await IRS.update(data, {
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menyetujui data IRS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menyetujui data IRS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const GetIRSAllByNIMNotVerified = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+  try {
+    const dataIRS = await IRS.findAll({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { verified: false }],
+      },
+    });
+
+    if (!dataIRS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data IRS untuk NIM " + NIM + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data IRS untuk NIM " + NIM,
+          null,
+          dataIRS
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data IRS untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateDataIRS,
   UpdateDataIRS,
   GetIRSByNIMSemester,
   GetIRSAllByNIM,
   CreateIRSScanIRS,
+  approveIRS,
+  GetIRSAllByNIMNotVerified,
 };

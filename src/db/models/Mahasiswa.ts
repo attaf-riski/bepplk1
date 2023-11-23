@@ -1,6 +1,7 @@
 import { Optional, DataTypes, Model } from "sequelize";
 import connection from "../../config/dbConnect";
 import User from "./User";
+import IRS from "./IRS";
 
 interface MahasiswaAttributes {
   NIM?: string | null;

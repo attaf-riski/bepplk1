@@ -368,10 +368,124 @@ const GetKHSAllByNIM = async (
   }
 };
 
+const approveKHS = async (req: Request, res: Response): Promise<Response> => {
+  const { NIM, semesterAktif } = req.params;
+  const { statusApprove } = req.body;
+  try {
+    const dataIRS = await KHS.findOne({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    if (!dataIRS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data KHS untuk semester " + semesterAktif + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    const data = {
+      verified: statusApprove,
+    };
+
+    await KHS.update(data, {
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menyetujui data KHS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menyetujui data KHS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const GetKHSAllByNIMNotVerified = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+  try {
+    const dataIRS = await KHS.findAll({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { verified: false }],
+      },
+    });
+
+    if (!dataIRS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data KHS untuk NIM " + NIM + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data KHS untuk NIM " + NIM,
+          null,
+          dataIRS
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data KHS untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateDataKHS,
   UpdateDataKHS,
   GetKHSByNIMSemester,
   GetKHSAllByNIM,
   CreateKHSScanKHS,
+  approveKHS,
+  GetKHSAllByNIMNotVerified,
 };

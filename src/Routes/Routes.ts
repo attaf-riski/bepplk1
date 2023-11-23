@@ -10,6 +10,8 @@ import KHSController from "../controllers/KHSController";
 import PKL from "../db/models/PKL";
 import PKLController from "../controllers/PKLController";
 import SkripsiController from "../controllers/SkripsiController";
+import DoswalController from "../controllers/DoswalController";
+import DepartemenController from "../controllers/DepartemenController";
 
 const router = express.Router();
 
@@ -115,24 +117,24 @@ router.post(
 router.post(
   "/irs/update/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   IRSController.UpdateDataIRS
 );
 
 router.post(
   "/irs/scan/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   IRSController.CreateIRSScanIRS
 );
 
 router.get(
   "/irs/detail/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   IRSController.GetIRSByNIMSemester
 );
 
@@ -149,32 +151,32 @@ router.get(
 router.post(
   "/khs/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   KHSController.CreateDataKHS
 );
 
 router.post(
   "/khs/update/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   KHSController.UpdateDataKHS
 );
 
 router.post(
   "/khs/scan/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   KHSController.CreateKHSScanKHS
 );
 
 router.get(
   "/khs/detail/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   KHSController.GetKHSByNIMSemester
 );
 
@@ -213,22 +215,22 @@ router.post(
 router.post(
   "/pkl/scan/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   PKLController.CreatePKLScanBeritaAcara
 );
 
 router.get(
   "/pkl/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   PKLController.GetPKLByNIM
 );
 
 // skripsi
 router.post(
-  "/skrips/:NIM",
+  "/skripsi/:NIM",
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
   Authorization.MahasiswaNIM,
@@ -246,23 +248,181 @@ router.post(
 router.post(
   "/skripsi/scan/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   SkripsiController.CreateSkripsiScanBeritaAcara
 );
 
 router.get(
   "/skripsi/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   SkripsiController.GetSkripsiByNIM
 );
 
 // verifikasi dosen wali thd data mahasiswa wali
-// get semua IRS yang belum diverifikasi dosen wali
-// get semua KHS yang belum diverifikasi dosen wali
 // get semya pkl yangbelum diverifikasi dosenwali
 // get semua skripsi yang belum diverifikasi dosen wali
+router.get(
+  "/doswal/:userid",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  DoswalController.GetDosenWaliByUserId
+);
+
+// get mahasiswa yang memiliki irs belum diverifikasi dosen wali
+router.get(
+  "/doswal/irs/:NIP",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  MahasiswaController.GetMahasiswaWithNotVerifiedIRSByBIP
+);
+
+// get semua IRS yang belum diverifikasi dosen wali
+router.get(
+  "/doswal/listirs/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  IRSController.GetIRSAllByNIMNotVerified
+);
+
+router.post(
+  "/irs/approve/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  IRSController.approveIRS
+);
+
+router.post(
+  "/irs/approve/update/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  IRSController.UpdateDataIRS
+);
+
+// get semua KHS yang belum diverifikasi dosen wali
+router.get(
+  "/doswal/khs/:NIP",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  MahasiswaController.GetMahasiswaWithNotVerifiedKHSByBIP
+);
+
+router.get(
+  "/doswal/listkhs/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  KHSController.GetKHSAllByNIMNotVerified
+);
+
+router.post(
+  "/khs/approve/update/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  KHSController.UpdateDataKHS
+);
+
+router.post(
+  "/khs/approve/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  KHSController.approveKHS
+);
+
+router.post(
+  "/khs/approve/update/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  KHSController.UpdateDataKHS
+);
+
+// skripsi
+router.post(
+  "/skripsi/approve/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  SkripsiController.approveSkripsi
+);
+
+router.post(
+  "/skripsi/approve/update/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  SkripsiController.UpdateDataSkripsi
+);
+
+router.get(
+  "/doswal/skripsi/:NIP",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  MahasiswaController.GetMahasiswaWithNotVerifiedSkripsiByBIP
+);
+
+// pkl
+router.post(
+  "/pkl/approve/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  PKLController.approvePKL
+);
+
+router.post(
+  "/pkl/approve/update/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  PKLController.UpdateDataPKL
+);
+
+router.get(
+  "/doswal/pkl/:NIP",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  MahasiswaController.GetMahasiswaWithNotVerifiedPKLByBIP
+);
+
+router.get(
+  "/pencarianmahasiswa/:keyword&:doswalNIP", //keyword nama atau nim
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  MahasiswaController.GetMahasiswaByKeywordAndDoswalNIP
+);
+
+router.get(
+  "/pencarianmahasiswa/detailmahasiswa/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  Authorization.DosenWaliNIPonMahasiswa,
+  MahasiswaController.GetMahasiswaByNIM
+);
+
+// doswal dashboard
+router.get(
+  "/dashboarddoswal/:NIP",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  DoswalController.GetDashboardDoswal
+);
+
+// operator dashboard
+
+// departemen dashboard
+router.get(
+  "/dashboarddepartemen",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetDashboardDepartemen
+);
 
 export default router;

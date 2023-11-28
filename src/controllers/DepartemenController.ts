@@ -8,19 +8,19 @@ import PKL from "../db/models/PKL";
 import { Op } from "sequelize";
 import Skripsi from "../db/models/Skripsi";
 
-const GetDepartemenByNID = async (
+const GetDepartemenByNIP = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NID } = req.params;
+  const { NIP } = req.params;
 
   try {
     const dataDepartemen = await Departemen.findOne({
-      where: { NID: NID },
+      where: { NIP: NIP },
     });
 
     const data = {
-      NID: dataDepartemen?.NID,
+      NIP: dataDepartemen?.NIP,
       nama: dataDepartemen?.nama,
       email: dataDepartemen?.email,
     };
@@ -36,7 +36,7 @@ const GetDepartemenByNID = async (
       .send(
         Helper.ResponseData(
           200,
-          "Berhasil mendapatkan data departemen dengan NID " + NID,
+          "Berhasil mendapatkan data departemen dengan NIP " + NIP,
           null,
           data
         )
@@ -47,7 +47,7 @@ const GetDepartemenByNID = async (
       .send(
         Helper.ResponseData(
           500,
-          "Gagal mendapatkan data departemen dengan NID " + NID,
+          "Gagal mendapatkan data departemen dengan NIP " + NIP,
           err,
           null
         )
@@ -56,12 +56,12 @@ const GetDepartemenByNID = async (
 };
 
 const UpdateData = async (req: Request, res: Response): Promise<Response> => {
-  const { NID } = req.params;
+  const { NIP } = req.params;
   const { nama, email } = req.body;
 
   try {
     const dataDepartemen = await Departemen.findOne({
-      where: { NID: NID },
+      where: { NIP: NIP },
     });
 
     if (!dataDepartemen) {
@@ -69,15 +69,14 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
         .status(404)
         .send(Helper.ResponseData(404, "Unauthorized", null, null));
     }
-    console.log(dataDepartemen);
     const data = {
-      NID: NID,
+      NIP: NIP,
       nama: nama,
       email: email,
     };
 
     await Departemen.update(data, {
-      where: { NID: NID },
+      where: { NIP: NIP },
     });
 
     return res
@@ -85,7 +84,7 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
       .send(
         Helper.ResponseData(
           200,
-          "Berhasil mengubah data departemen dengan NID " + NID,
+          "Berhasil mengubah data departemen dengan NIP " + NIP,
           null,
           data
         )
@@ -96,7 +95,7 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
       .send(
         Helper.ResponseData(
           500,
-          "Gagal mengubah data departemen dengan NID " + NID,
+          "Gagal mengubah data departemen dengan NIP " + NIP,
           err,
           null
         )
@@ -116,7 +115,7 @@ const GetDepartemenByUserId = async (
     });
 
     const data = {
-      NID: dataDepartemen?.NID,
+      NIP: dataDepartemen?.NIP,
       nama: dataDepartemen?.nama,
       email: dataDepartemen?.email,
       userId: dataDepartemen?.userId,
@@ -128,7 +127,7 @@ const GetDepartemenByUserId = async (
         .send(
           Helper.ResponseData(
             403,
-            "Unauthorized For Get Data Mahasiwa",
+            "Unauthorized For Get Data Departemen",
             null,
             null
           )
@@ -140,7 +139,7 @@ const GetDepartemenByUserId = async (
       .send(
         Helper.ResponseData(
           200,
-          "Berhasil mendapatkan data departemen dengan NID " + userid,
+          "Berhasil mendapatkan data departemen dengan NIP " + userid,
           null,
           data
         )
@@ -151,7 +150,7 @@ const GetDepartemenByUserId = async (
       .send(
         Helper.ResponseData(
           500,
-          "Gagal mendapatkan data departemen dengan NID " + userid,
+          "Gagal mendapatkan data departemen dengan NIP " + userid,
           err,
           null
         )
@@ -163,11 +162,11 @@ const GetDashboardDepartemen = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NID } = req.params;
+  const { NIP } = req.params;
 
   try {
     const dataDepartemen = await Departemen.findOne({
-      where: { NID: NID },
+      where: { NIP: NIP },
     });
 
     const data = {
@@ -198,7 +197,7 @@ const GetDashboardDepartemen = async (
     if (!dataDepartemen) {
       return res
         .status(403)
-        .send(Helper.ResponseData(403, "Unauthorized", null, null));
+        .send(Helper.ResponseData(403, "Unauthorized bro", null, null));
     }
 
     return res
@@ -206,7 +205,7 @@ const GetDashboardDepartemen = async (
       .send(
         Helper.ResponseData(
           200,
-          "Berhasil mendapatkan data departemen dengan NID " + NID,
+          "Berhasil mendapatkan data departemen dengan NIP " + NIP,
           null,
           data
         )
@@ -217,7 +216,7 @@ const GetDashboardDepartemen = async (
       .send(
         Helper.ResponseData(
           500,
-          "Gagal mendapatkan data departemen dengan NID " + NID,
+          "Gagal mendapatkan data departemen dengan NIP " + NIP,
           err,
           null
         )
@@ -227,7 +226,7 @@ const GetDashboardDepartemen = async (
 
 export default {
   UpdateData,
-  GetDepartemenByNID,
+  GetDepartemenByNIP,
   GetDepartemenByUserId,
   GetDashboardDepartemen,
 };

@@ -13,14 +13,12 @@ const Authenticated = (req: Request, res: Response, next: NextFunction) => {
         .status(401)
         .send(Helper.ResponseData(401, "Unautorized", null, null));
     }
-    // console.log("token" + token);
     const result = Helper.ExtractToken(token!);
     if (!result) {
       return res
         .status(401)
         .send(Helper.ResponseData(401, "Unautorized Boss", null, null));
     }
-    console.log(result);
     res.locals.userEmail = result?.email;
     res.locals.roleId = result?.roleId;
     res.locals.userId = result?.id;
@@ -150,8 +148,7 @@ const MahasiswaNIM = async (
     const NIMonDataBase = await Mahasiswa.findOne({
       where: { userId: res.locals.userId },
     });
-    console.log(NIMonDataBase?.NIM);
-    console.log(NIM);
+
     if (NIMonDataBase?.NIM != NIM) {
       return res
         .status(403)

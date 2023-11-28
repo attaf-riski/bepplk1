@@ -216,8 +216,6 @@ const UpdateDataSkripsi = async (
         .send(Helper.ResponseData(403, "Data Skripsi tidak ada", null, null));
     }
 
-    console.log(data);
-
     await Skripsi.update(data, {
       where: {
         NIM: NIM,

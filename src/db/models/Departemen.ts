@@ -3,7 +3,7 @@ import connection from "../../config/dbConnect";
 import User from "./User";
 
 interface DepartemenAttributes {
-  NID?: string | null;
+  NIP?: string | null;
   nama?: string | null;
   email?: string | null;
   userId?: number | null;
@@ -13,14 +13,14 @@ interface DepartemenAttributes {
 }
 
 export interface DepartemenInput
-  extends Optional<DepartemenAttributes, "NID"> {}
+  extends Optional<DepartemenAttributes, "NIP"> {}
 export interface DepartemenOutput extends Required<DepartemenAttributes> {}
 
 class Departemen
   extends Model<DepartemenAttributes, DepartemenInput>
   implements DepartemenAttributes
 {
-  public NID?: string | null;
+  public NIP?: string | null;
   public nama?: string | null;
   public email?: string | null;
   public userId?: number | null;
@@ -31,7 +31,7 @@ class Departemen
 
 Departemen.init(
   {
-    NID: {
+    NIP: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,

@@ -188,8 +188,6 @@ const UpdateDataPKL = async (
       scanBeritaAcara: "",
     };
 
-    console.log(data);
-
     // pengecekan status: belum ambil, sedang ambil, lulus
     if (status == "belum ambil") {
       data.nilai = "Kosong";
@@ -218,8 +216,6 @@ const UpdateDataPKL = async (
         .status(403)
         .send(Helper.ResponseData(403, "Data PKL tidak ada", null, null));
     }
-
-    console.log(data);
 
     await PKL.update(data, {
       where: {

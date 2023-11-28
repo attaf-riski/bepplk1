@@ -8,6 +8,7 @@ import csvv from "csv-parser";
 import User from "../db/models/User";
 import Mahasiswa from "../db/models/Mahasiswa";
 import json2csv from "json2csv";
+import Operator from "../db/models/Operator";
 
 let dataKembar: any = [];
 let csvData: any = [];
@@ -28,7 +29,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
         console.log(err);
       })
 
-      .pipe(csvv(["NIM", "Nama", "Angkatan", "NIPDosenWali"]))
+      .pipe(csvv(["NIM", "Nama", "Angkatan", "NIPOperator"]))
       .on("data", (data: any) => {
         const random = Math.floor(1000 + Math.random() * 9000);
         const namaTrim: string = data.Nama.replace(/\s/g, "");
@@ -46,7 +47,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
             status: "Aktif",
             photo:
               "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png",
-            dosenWaliNIP: data.NIPDosenWali,
+            dosenWaliNIP: data.NIPOperator,
             username: "MA" + namaTrim + random,
             roleId: 5,
             password: hashed,
@@ -62,7 +63,6 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
         const csvDataBuffer = csvData;
         csvData = [];
         csvDataBuffer.shift();
-        console.log(csvDataBuffer);
         // buat user accout
         const user = await User.bulkCreate(csvDataBuffer);
         if (user) {
@@ -70,7 +70,7 @@ const UploudCSV = async (req: Request, res: Response): Promise<Response> => {
             csvDataBuffer[i].userId = user[i].dataValues.id;
           }
         }
-        // masukkan ke basis data dan sambungkan dengan user dan dosen wali
+        // masukkan ke basis data dan sambungkan dengan user dan
         for (let i = 0; i < csvDataBuffer.length; i++) {
           const mhs = await Mahasiswa.findOne({
             where: {
@@ -142,7 +142,6 @@ const DownloadCSV = async (req: Request, res: Response): Promise<Response> => {
   }
 
   // kirimkan file di folder uploud sesuai nama filename ke user dalam bentuk file csv
-  console.log(fileLocation);
   const file = fs.createReadStream(fileLocation);
   res.setHeader("Content-Type", "text/csv");
   res.setHeader("Content-Disposition", "attachment; filename=" + filename);
@@ -161,4 +160,51 @@ const DeleteCSV = async (req: Request, res: Response) => {
   return;
 };
 
-export default { UploudCSV, DownloadCSV, DeleteCSV };
+const GetOperatorByUserId = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { userid } = req.params;
+
+  try {
+    const dataOperator = await Operator.findOne({
+      where: { userId: userid },
+    });
+
+    const data = {
+      NIP: dataOperator?.NIP,
+      nama: dataOperator?.nama,
+      email: dataOperator?.email,
+    };
+
+    if (!dataOperator) {
+      return res
+        .status(403)
+        .send(Helper.ResponseData(403, "Unauthorized", null, null));
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data operator dengan userId " + userid,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data  dengan userid " + userid,
+          err,
+          null
+        )
+      );
+  }
+};
+
+export default { UploudCSV, DownloadCSV, DeleteCSV, GetOperatorByUserId };

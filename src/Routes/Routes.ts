@@ -82,6 +82,13 @@ router.delete("/uploud/:filename", OperatorController.DeleteCSV);
 //   MahasiswaController.GetMahasiswaByNIM
 // );
 
+router.post(
+  "/mahasiswa/create",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  MahasiswaController.CreateMahasiswa
+);
+
 router.get(
   "/mahasiswa/:userid",
   Authorization.Authenticated,
@@ -265,6 +272,13 @@ router.get(
 // get semya pkl yangbelum diverifikasi dosenwali
 // get semua skripsi yang belum diverifikasi dosen wali
 router.get(
+  "/doswal/listdoswal",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DoswalController.GetAllDoswal
+);
+
+router.get(
   "/doswal/:userid",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
@@ -407,6 +421,14 @@ router.get(
   MahasiswaController.GetMahasiswaByNIM
 );
 
+// kembalikan warna semester 1 - 14
+router.get(
+  "/dashboarddoswal/colorbox/:NIM",
+  Authorization.Authenticated,
+  Authorization.DosenWaliAutho,
+  MahasiswaController.GetColorBox
+);
+
 // doswal dashboard
 router.get(
   "/dashboarddoswal/:NIP",
@@ -416,13 +438,26 @@ router.get(
 );
 
 // operator dashboard
+router.get(
+  "/operator/:userid",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  OperatorController.GetOperatorByUserId
+);
 
 // departemen dashboard
 router.get(
-  "/dashboarddepartemen",
+  "/dashboarddepartemen/:NIP",
   Authorization.Authenticated,
   Authorization.Departemen,
   DepartemenController.GetDashboardDepartemen
+);
+
+router.get(
+  "/departemen/:userid",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetDepartemenByUserId
 );
 
 export default router;

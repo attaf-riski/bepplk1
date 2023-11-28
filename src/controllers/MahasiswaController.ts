@@ -4,10 +4,94 @@ import Helper from "../helpers/Helper";
 import { Request, Response } from "express";
 import uploadImage from "../middleware/UploudImage";
 import { Op } from "sequelize";
-import sequelize, { Sequelize } from "sequelize/types/sequelize";
+import sequelize, { Sequelize, col } from "sequelize/types/sequelize";
 import KHS from "../db/models/KHS";
 import PKL from "../db/models/PKL";
 import Skripsi from "../db/models/Skripsi";
+import PasswordHelper from "../helpers/PasswordHelper";
+import User from "../db/models/User";
+
+// create mahasiswa
+const CreateMahasiswa = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM, nama, angkatan, dosenWaliNIP, status } = req.body;
+  const hashed = await PasswordHelper.PasswrodHashing("12345678");
+
+  const random = Math.floor(1000 + Math.random() * 9000);
+  const namaTrim: string = nama.replace(/\s/g, "");
+
+  const newData: any = {
+    NIM: NIM,
+    nama: nama,
+    alamat: "",
+    kabkota: "",
+    provinsi: "",
+    angkatan: angkatan,
+    jalurMasuk: "",
+    email: "",
+    noHP: "",
+    status: status,
+    photo:
+      "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png",
+    dosenWaliNIP: dosenWaliNIP,
+    username: "MA" + namaTrim + random,
+    roleId: 5,
+    password: hashed,
+    verified: true,
+    active: true,
+    userId: "",
+  };
+
+  const checkMahasiswa = await Mahasiswa.findOne({
+    where: {
+      NIM: NIM,
+    },
+  });
+
+  if (checkMahasiswa) {
+    return res
+      .status(403)
+      .send(
+        Helper.ResponseData(
+          403,
+          "Mahasiswa dengan NIM " + NIM + " sudah ada",
+          null,
+          null
+        )
+      );
+  }
+
+  const user = await User.create({
+    username: newData.username,
+    email: "",
+    password: hashed,
+    active: true,
+    verified: true,
+    roleId: 5,
+  });
+
+  newData.userId = user.id;
+
+  const createMahasiswa = await Mahasiswa.create(newData);
+
+  const data = {
+    ...createMahasiswa,
+    username: newData.username,
+  };
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil membuat mahasiswa dengan NIM " + NIM,
+        null,
+        data
+      )
+    );
+};
 
 const GetMahasiswaByNIM = async (
   req: Request,
@@ -114,7 +198,6 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
         .status(404)
         .send(Helper.ResponseData(404, "Unauthorized", null, null));
     }
-    console.log(dataMahasiswa);
     const data = {
       NIM: NIM,
       angkatan: dataMahasiswa?.angkatan,
@@ -328,7 +411,6 @@ const GetMahasiswaWithNotVerifiedIRSByBIP = async (
 
       if (dataMahasiswaBuf) {
         dataMahasiswaDikirim.push(dataMahasiswaBuf);
-        console.log(dataMahasiswaBuf);
       }
     }
     if (!dataMahasiswa) {
@@ -405,7 +487,6 @@ const GetMahasiswaWithNotVerifiedKHSByBIP = async (
 
       if (dataMahasiswaBuf) {
         dataMahasiswaDikirim.push(dataMahasiswaBuf);
-        console.log(dataMahasiswaBuf);
       }
     }
     if (!dataMahasiswa) {
@@ -482,7 +563,6 @@ const GetMahasiswaWithNotVerifiedPKLByBIP = async (
 
       if (dataMahasiswaBuf) {
         dataMahasiswaDikirim.push(dataMahasiswaBuf);
-        console.log(dataMahasiswaBuf);
       }
     }
     if (!dataMahasiswa) {
@@ -559,7 +639,6 @@ const GetMahasiswaWithNotVerifiedSkripsiByBIP = async (
 
       if (dataMahasiswaBuf) {
         dataMahasiswaDikirim.push(dataMahasiswaBuf);
-        console.log(dataMahasiswaBuf);
       }
     }
     if (!dataMahasiswa) {
@@ -599,7 +678,97 @@ const GetMahasiswaWithNotVerifiedSkripsiByBIP = async (
   }
 };
 
+const GetColorBox = async (req: Request, res: Response): Promise<Response> => {
+  const { NIM } = req.params;
+  const colorBox: any = [];
+
+  for (let i: any = 1; i <= 14; i++) {
+    const resultIRS = await IRS.findOne({
+      where: {
+        [Op.and]: [
+          {
+            NIM: NIM,
+          },
+          {
+            semesterAktif: i,
+          },
+        ],
+      },
+    });
+
+    const resultKHS = await KHS.findOne({
+      where: {
+        [Op.and]: [
+          {
+            NIM: NIM,
+          },
+          {
+            semesterAktif: i,
+          },
+        ],
+      },
+    });
+
+    const resultPKL = await PKL.findOne({
+      where: {
+        [Op.and]: [
+          {
+            NIM: NIM,
+          },
+          {
+            semesterLulus: i,
+          },
+        ],
+      },
+    });
+
+    const resultSkripsi = await Skripsi.findOne({
+      where: {
+        [Op.and]: [
+          {
+            NIM: NIM,
+          },
+          {
+            lamaStudi: i,
+          },
+        ],
+      },
+    });
+    if (resultSkripsi !== null) {
+      colorBox.push({
+        i: 4,
+      });
+    } else if (resultIRS !== null && resultKHS !== null) {
+      if (resultPKL !== null) {
+        colorBox.push({
+          i: 3,
+        });
+      } else {
+        colorBox.push({
+          i: 2,
+        });
+      }
+    } else {
+      colorBox.push({
+        i: 1,
+      });
+    }
+  }
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil Mendapatkan Color Box Mahasiswa " + NIM,
+        null,
+        colorBox
+      )
+    );
+};
+
 export default {
+  CreateMahasiswa,
   UpdateData,
   GetMahasiswaByNIM,
   UpdataDataPhoto,
@@ -609,4 +778,5 @@ export default {
   GetMahasiswaWithNotVerifiedKHSByBIP,
   GetMahasiswaWithNotVerifiedPKLByBIP,
   GetMahasiswaWithNotVerifiedSkripsiByBIP,
+  GetColorBox,
 };

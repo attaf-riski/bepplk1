@@ -69,7 +69,6 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
         .status(404)
         .send(Helper.ResponseData(404, "Unauthorized", null, null));
     }
-    console.log(dataDosenWali);
     const data = {
       NIP: NIP,
       nama: nama,
@@ -241,9 +240,32 @@ const GetDashboardDoswal = async (
   }
 };
 
+const GetAllDoswal = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const dataDosenWali = await DosenWali.findAll();
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data dosen wali",
+          null,
+          dataDosenWali
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(500, "Gagal mendapatkan data dosen wali", err, null)
+      );
+  }
+};
+
 export default {
   UpdateData,
   GetDosenWaliByNIP,
   GetDosenWaliByUserId,
   GetDashboardDoswal,
+  GetAllDoswal,
 };

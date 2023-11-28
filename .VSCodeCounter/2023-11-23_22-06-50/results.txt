@@ -1,0 +1,89 @@
+Date : 2023-11-23 22:06:50
+Directory : /Users/attaf-riski/Desktop/pujiyanto/nodejs-api
+Total : 47 files,  8475 codes, 193 comments, 580 blanks, all 9248 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |         31 |      4,796 |         78 |        552 |      5,426 |
+| JSON               |          2 |      3,196 |          0 |          2 |      3,198 |
+| JavaScript         |         12 |        455 |         26 |         16 |        497 |
+| Markdown           |          1 |         16 |          0 |          1 |         17 |
+| JSON with Comments |          1 |         12 |         89 |          9 |        110 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                  | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                     |         47 |      8,475 |        193 |        580 |      9,248 |
+| . (Files)                                                                                             |          4 |      3,224 |         89 |         12 |      3,325 |
+| src                                                                                                   |         43 |      5,251 |        104 |        568 |      5,923 |
+| src (Files)                                                                                           |          1 |         30 |          3 |          6 |         39 |
+| src/Routes                                                                                            |          1 |        346 |         50 |         54 |        450 |
+| src/config                                                                                            |          2 |         38 |          0 |          9 |         47 |
+| src/controllers                                                                                       |         10 |      3,273 |         20 |        336 |      3,629 |
+| src/db                                                                                                |         21 |      1,092 |         26 |         98 |      1,216 |
+| src/db/migrations                                                                                     |         10 |        398 |         10 |         10 |        418 |
+| src/db/models                                                                                         |         10 |        662 |          0 |         85 |        747 |
+| src/db/seeders                                                                                        |          1 |         32 |         16 |          3 |         51 |
+| src/helpers                                                                                           |          2 |         98 |          0 |         19 |        117 |
+| src/middleware                                                                                        |          6 |        374 |          5 |         46 |        425 |
+| src/middleware (Files)                                                                                |          5 |        322 |          5 |         36 |        363 |
+| src/middleware/validation                                                                             |          1 |         52 |          0 |         10 |         62 |
++-------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                              | language           | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/README.md                                             | Markdown           |         16 |          0 |          1 |         17 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/package-lock.json                                     | JSON               |      3,152 |          0 |          1 |      3,153 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/package.json                                          | JSON               |         44 |          0 |          1 |         45 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/Routes/Routes.ts                                  | TypeScript         |        346 |         50 |         54 |        450 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/config/database.js                                | JavaScript         |         25 |          0 |          3 |         28 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/config/dbConnect.ts                               | TypeScript         |         13 |          0 |          6 |         19 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/DepartemenController.ts               | TypeScript         |        202 |          3 |         28 |        233 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/DoswalController.ts                   | TypeScript         |        218 |          3 |         28 |        249 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/IRSController.ts                      | TypeScript         |        452 |          0 |         38 |        490 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/KHSController.ts                      | TypeScript         |        455 |          0 |         37 |        492 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/MahasiswaController.ts                | TypeScript         |        637 |          4 |         57 |        698 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/OperatorController.ts                 | TypeScript         |        188 |          6 |         17 |        211 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/PKLController.ts                      | TypeScript         |        418 |          2 |         46 |        466 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/RoleController.ts                     | TypeScript         |        155 |          0 |         15 |        170 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/SkripsiController.ts                  | TypeScript         |        380 |          2 |         43 |        425 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/controllers/UserController.ts                     | TypeScript         |        168 |          0 |         27 |        195 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231031034955-create-role.js       | JavaScript         |         30 |          1 |          1 |         32 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231031082223-create-user.js       | JavaScript         |         45 |          1 |          0 |         46 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231102124314-create-mahasiswa.js  | JavaScript         |         58 |          1 |          1 |         60 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231102130223-create-operator.js   | JavaScript         |         31 |          1 |          1 |         33 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231104080826-create-dosenwali.js  | JavaScript         |         33 |          1 |          2 |         36 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231104081205-create-irs.js        | JavaScript         |         38 |          1 |          1 |         40 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231104081406-create-khs.js        | JavaScript         |         47 |          1 |          1 |         49 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231104081630-create-pkl.js        | JavaScript         |         42 |          1 |          1 |         44 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231104081745-create-skripsi.js    | JavaScript         |         42 |          1 |          1 |         44 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/migrations/20231104082450-create-departemen.js | JavaScript         |         32 |          1 |          1 |         34 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/Departemen.ts                           | TypeScript         |         55 |          0 |          9 |         64 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/DosenWali.ts                            | TypeScript         |         54 |          0 |          9 |         63 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/IRS.ts                                  | TypeScript         |         58 |          0 |          9 |         67 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/KHS.ts                                  | TypeScript         |         76 |          0 |          9 |         85 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/Mahasiswa.ts                            | TypeScript         |        109 |          0 |          8 |        117 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/Operator.ts                             | TypeScript         |         54 |          0 |          9 |         63 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/PKL.ts                                  | TypeScript         |         68 |          0 |          9 |         77 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/Role.ts                                 | TypeScript         |         42 |          0 |          6 |         48 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/Skripsi.ts                              | TypeScript         |         70 |          0 |          9 |         79 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/models/User.ts                                 | TypeScript         |         76 |          0 |          8 |         84 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/db/seeders/20231031041736-RoleSeeder.js           | JavaScript         |         32 |         16 |          3 |         51 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/helpers/Helper.ts                                 | TypeScript         |         85 |          0 |         15 |        100 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/helpers/PasswordHelper.ts                         | TypeScript         |         13 |          0 |          4 |         17 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/index.ts                                          | TypeScript         |         30 |          3 |          6 |         39 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/middleware/Authorization.ts                       | TypeScript         |        203 |          1 |         16 |        220 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/middleware/UploudCSV.ts                           | TypeScript         |         31 |          1 |          5 |         37 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/middleware/UploudIRS.ts                           | TypeScript         |         28 |          1 |          5 |         34 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/middleware/UploudImage.ts                         | TypeScript         |         32 |          1 |          5 |         38 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/middleware/UploudPDF.ts                           | TypeScript         |         28 |          1 |          5 |         34 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/src/middleware/validation/UserValidation.ts           | TypeScript         |         52 |          0 |         10 |         62 |
+| /Users/attaf-riski/Desktop/pujiyanto/nodejs-api/tsconfig.json                                         | JSON with Comments |         12 |         89 |          9 |        110 |
+| Total                                                                                                 |                    |      8,475 |        193 |        580 |      9,248 |
++-------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

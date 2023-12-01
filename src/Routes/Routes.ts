@@ -460,4 +460,46 @@ router.get(
   DepartemenController.GetDepartemenByUserId
 );
 
+router.get(
+  "/departemen/getsevenyears/pkl",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetRekapSevenYearsPKL
+);
+
+router.get(
+  "/departemen/getsevenyears/pkl/detail/:tahun&:status",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetDetailRekapSevenYearsPKL
+);
+
+router.get(
+  "/departemen/getsevenyears/skripsi",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetRekapSevenYearsSkripsi
+);
+
+router.get(
+  "/departemen/getsevenyears/skripsi/detail/:tahun&:status",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetDetailRekapSevenYearsSkripsi
+);
+
+router.get(
+  "/departemen/getrekapstatus/mahasiswa",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetRekapStatusMahasiswa
+);
+
+router.get(
+  "/departemen/getrekapstatus/mahasiswa/detail/:tahun&:status",
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  DepartemenController.GetDetailRekapStatus
+);
+
 export default router;

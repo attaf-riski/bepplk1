@@ -692,6 +692,9 @@ const GetColorBox = async (req: Request, res: Response): Promise<Response> => {
           {
             semesterAktif: i,
           },
+          {
+            verified: true,
+          },
         ],
       },
     });
@@ -704,6 +707,9 @@ const GetColorBox = async (req: Request, res: Response): Promise<Response> => {
           },
           {
             semesterAktif: i,
+          },
+          {
+            verified: true,
           },
         ],
       },
@@ -718,6 +724,9 @@ const GetColorBox = async (req: Request, res: Response): Promise<Response> => {
           {
             semesterLulus: i,
           },
+          {
+            verified: true,
+          },
         ],
       },
     });
@@ -730,6 +739,9 @@ const GetColorBox = async (req: Request, res: Response): Promise<Response> => {
           },
           {
             lamaStudi: i,
+          },
+          {
+            verified: true,
           },
         ],
       },

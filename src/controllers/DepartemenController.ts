@@ -224,9 +224,342 @@ const GetDashboardDepartemen = async (
   }
 };
 
+const GetRekapSevenYearsPKL = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const thisYear = new Date().getFullYear();
+  const allYear: any = [];
+
+  for (let i = 6; i >= 0; i--) {
+    let bufferSudah = 0;
+    let bufferBelom = 0;
+    // dapatkan mahasiswa yang lulus PKL untuk mahasiswa angkatan thisYear - i
+    const mahasiswa = await Mahasiswa.findAll({
+      where: {
+        angkatan: thisYear - i,
+      },
+    });
+
+    // dapatkan jumlah data mahasiswa yang sudah lulus PKL dari mahasiswa yang sudah didapatkan
+    for (let j = 0; j < mahasiswa.length; j++) {
+      const pkl = await PKL.findOne({
+        where: {
+          NIM: mahasiswa[j].NIM,
+          status: "Lulus",
+        },
+      });
+
+      if (pkl) {
+        bufferSudah++;
+      } else {
+        bufferBelom++;
+      }
+    }
+
+    allYear.push({
+      tahun: thisYear - i,
+      sudah: bufferSudah,
+      belum: bufferBelom,
+    });
+  }
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil mendapatkan data rekap 7 tahun terakhir",
+        null,
+        allYear
+      )
+    );
+};
+
+const GetDetailRekapSevenYearsPKL = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tahun, status } = req.params;
+
+  const mahasiswa = await Mahasiswa.findAll({
+    where: {
+      angkatan: tahun,
+    },
+  });
+
+  const data = [];
+  // jika status Lulus maka tampilkan mahasiswa yang sudah lulus PKL
+  // jika status selain lulus maka tampilkan mahasiswa yang belum lulus PKL
+
+  if (status === "Lulus") {
+    for (let i = 0; i < mahasiswa.length; i++) {
+      const pkl = await PKL.findOne({
+        where: {
+          NIM: mahasiswa[i].NIM,
+          status: "Lulus",
+        },
+      });
+
+      if (pkl) {
+        data.push({
+          NIM: mahasiswa[i].NIM,
+          nama: mahasiswa[i].nama,
+          angkatan: mahasiswa[i].angkatan,
+          nilai: pkl.nilai,
+        });
+      }
+    }
+  } else {
+    for (let i = 0; i < mahasiswa.length; i++) {
+      const pkl = await PKL.findOne({
+        where: {
+          NIM: mahasiswa[i].NIM,
+          status: "Lulus",
+        },
+      });
+
+      if (!pkl) {
+        data.push({
+          NIM: mahasiswa[i].NIM,
+          nama: mahasiswa[i].nama,
+          angkatan: mahasiswa[i].angkatan,
+          nilai: 0,
+        });
+      }
+    }
+  }
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil mendapatkan data rekap 7 tahun terakhir",
+        null,
+        data
+      )
+    );
+};
+
+const GetRekapSevenYearsSkripsi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const thisYear = new Date().getFullYear();
+  const allYear: any = [];
+
+  for (let i = 6; i >= 0; i--) {
+    let bufferSudah = 0;
+    let bufferBelom = 0;
+    // dapatkan mahasiswa yang lulus PKL untuk mahasiswa angkatan thisYear - i
+    const mahasiswa = await Mahasiswa.findAll({
+      where: {
+        angkatan: thisYear - i,
+      },
+    });
+
+    // dapatkan jumlah data mahasiswa yang sudah lulus PKL dari mahasiswa yang sudah didapatkan
+    for (let j = 0; j < mahasiswa.length; j++) {
+      const pkl = await Skripsi.findOne({
+        where: {
+          NIM: mahasiswa[j].NIM,
+          status: "Lulus",
+        },
+      });
+
+      if (pkl) {
+        bufferSudah++;
+      } else {
+        bufferBelom++;
+      }
+    }
+
+    allYear.push({
+      tahun: thisYear - i,
+      sudah: bufferSudah,
+      belum: bufferBelom,
+    });
+  }
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil mendapatkan data rekap 7 tahun terakhir",
+        null,
+        allYear
+      )
+    );
+};
+
+const GetDetailRekapSevenYearsSkripsi = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tahun, status } = req.params;
+
+  const mahasiswa = await Mahasiswa.findAll({
+    where: {
+      angkatan: tahun,
+    },
+  });
+
+  const data = [];
+  // jika status Lulus maka tampilkan mahasiswa yang sudah lulus Skripsi
+  // jika status selain lulus maka tampilkan mahasiswa yang belum lulus Skrispsi
+
+  if (status === "Lulus") {
+    for (let i = 0; i < mahasiswa.length; i++) {
+      const skripsi = await Skripsi.findOne({
+        where: {
+          NIM: mahasiswa[i].NIM,
+          status: "Lulus",
+        },
+      });
+
+      if (skripsi) {
+        data.push({
+          NIM: mahasiswa[i].NIM,
+          nama: mahasiswa[i].nama,
+          angkatan: mahasiswa[i].angkatan,
+          nilai: skripsi.nilai,
+        });
+      }
+    }
+  } else {
+    for (let i = 0; i < mahasiswa.length; i++) {
+      const skripsi = await Skripsi.findOne({
+        where: {
+          NIM: mahasiswa[i].NIM,
+          status: "Lulus",
+        },
+      });
+
+      if (!skripsi) {
+        data.push({
+          NIM: mahasiswa[i].NIM,
+          nama: mahasiswa[i].nama,
+          angkatan: mahasiswa[i].angkatan,
+          nilai: 0,
+        });
+      }
+    }
+  }
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil mendapatkan data rekap 7 tahun terakhir",
+        null,
+        data
+      )
+    );
+};
+
+const GetRekapStatusMahasiswa = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const thisYear = new Date().getFullYear();
+  const data: any = [];
+
+  for (let i = 6; i >= 0; i--) {
+    let aktif = 0;
+    let dropout = 0;
+    let mangkir = 0;
+    let cuti = 0;
+    let lulus = 0;
+    let undurdiri = 0;
+    let meninggal = 0;
+    // dapatkan data mahasiswa dengan angkatan thisYear - i
+
+    const mahasiswa = await Mahasiswa.findAll({
+      where: {
+        angkatan: thisYear - i,
+      },
+    });
+
+    // dapatkan data status mahasiswa dari mahasiswa yang sudah didapatkan
+    for (let j = 0; j < mahasiswa.length; j++) {
+      if (mahasiswa[j].status === "Aktif") {
+        aktif++;
+      } else if (mahasiswa[j].status === "DO") {
+        dropout++;
+      } else if (mahasiswa[j].status === "Mangkir") {
+        mangkir++;
+      } else if (mahasiswa[j].status === "Cuti") {
+        cuti++;
+      } else if (mahasiswa[j].status === "Lulus") {
+        lulus++;
+      } else if (mahasiswa[j].status === "Undur Diri") {
+        undurdiri++;
+      } else if (mahasiswa[j].status === "Meninggal") {
+        meninggal++;
+      }
+    }
+
+    data.push({
+      tahun: thisYear - i,
+      aktif: aktif,
+      dropout: dropout,
+      mangkir: mangkir,
+      cuti: cuti,
+      lulus: lulus,
+      undurdiri: undurdiri,
+      meninggal: meninggal,
+    });
+  }
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil mendapatkan data mahasiswa dengan status ",
+        null,
+        data
+      )
+    );
+};
+
+const GetDetailRekapStatus = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { tahun, status } = req.params;
+
+  const mahasiswa = await Mahasiswa.findAll({
+    where: {
+      angkatan: tahun,
+      status: status,
+    },
+  });
+
+  return res
+    .status(200)
+    .send(
+      Helper.ResponseData(
+        200,
+        "Berhasil mendapatkan data mahasiswa dengan status",
+        null,
+        mahasiswa
+      )
+    );
+};
+
 export default {
   UpdateData,
   GetDepartemenByNIP,
   GetDepartemenByUserId,
   GetDashboardDepartemen,
+  GetRekapSevenYearsPKL,
+  GetDetailRekapSevenYearsPKL,
+  GetRekapSevenYearsSkripsi,
+  GetDetailRekapSevenYearsSkripsi,
+  GetRekapStatusMahasiswa,
+  GetDetailRekapStatus,
 };

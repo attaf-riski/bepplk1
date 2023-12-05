@@ -433,11 +433,11 @@ const GetIRSAllByNIMNotVerified = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NIM } = req.params;
+  const { NIM, type } = req.params;
   try {
     const dataIRS = await IRS.findAll({
       where: {
-        [Op.and]: [{ NIM: NIM }, { verified: false }],
+        [Op.and]: [{ NIM: NIM }, { verified: type == "true" ? true : false }],
       },
     });
 

@@ -7,6 +7,8 @@ import uploadImage from "../middleware/UploudImage";
 import PKL from "../db/models/PKL";
 import { Op } from "sequelize";
 import Skripsi from "../db/models/Skripsi";
+import User from "../db/models/User";
+import PasswordHelper from "../helpers/PasswordHelper";
 
 const GetDosenWaliByNIP = async (
   req: Request,
@@ -18,12 +20,6 @@ const GetDosenWaliByNIP = async (
     const dataDosenWali = await DosenWali.findOne({
       where: { NIP: NIP },
     });
-
-    const data = {
-      NIP: dataDosenWali?.NIP,
-      nama: dataDosenWali?.nama,
-      email: dataDosenWali?.email,
-    };
 
     if (!dataDosenWali) {
       return res
@@ -38,7 +34,7 @@ const GetDosenWaliByNIP = async (
           200,
           "Berhasil mendapatkan data dosen wali dengan NIP " + NIP,
           null,
-          data
+          dataDosenWali
         )
       );
   } catch (err: any) {
@@ -262,10 +258,172 @@ const GetAllDoswal = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+const GetDoswalByKeyword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { keyword } = req.params;
+
+  try {
+    const dataDosenWali = await DosenWali.findAll({
+      where: {
+        [Op.or]: [
+          {
+            NIP: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            nama: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            email: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+        ],
+      },
+    });
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data dosen wali",
+          null,
+          dataDosenWali
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(500, "Gagal mendapatkan data dosen wali", err, null)
+      );
+  }
+};
+
+const DeleteDoswal = async (req: Request, res: Response): Promise<Response> => {
+  const { NIP } = req.params;
+
+  try {
+    const dataDosenWali = await DosenWali.findOne({
+      where: { NIP: NIP },
+    });
+
+    if (!dataDosenWali) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Unauthorized", null, null));
+    }
+
+    await DosenWali.destroy({
+      where: { NIP: NIP },
+    });
+
+    await User.destroy({
+      where: { id: dataDosenWali?.userId || "" },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menghapus data dosen wali dengan NIP " + NIP,
+          null,
+          null
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menghapus data dosen wali dengan NIP " + NIP,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const CreateDoswal = async (req: Request, res: Response): Promise<Response> => {
+  const { NIP, nama, email } = req.body;
+
+  try {
+    const dataDosenWali = await DosenWali.findOne({
+      where: { NIP: NIP },
+    });
+
+    if (dataDosenWali) {
+      return res
+        .status(409)
+        .send(Helper.ResponseData(409, "NIP sudah terdaftar", null, null));
+    }
+
+    const data = {
+      NIP: NIP,
+      nama: nama,
+      email: email,
+      userId: 0,
+      username: "",
+    };
+
+    const hashed = await PasswordHelper.PasswrodHashing("12345678");
+    const random = Math.floor(1000 + Math.random() * 9000);
+    const namaTrim: string = nama.replace(/\s/g, "");
+
+    const dataUser = {
+      username: namaTrim + random,
+      email: email,
+      password: hashed,
+      active: true,
+      verified: true,
+      roleId: 4,
+    };
+
+    const dataUserCreated = await User.create(dataUser);
+
+    data.userId = dataUserCreated.id;
+    data.username = dataUserCreated.username;
+
+    await DosenWali.create(data);
+
+    return res
+      .status(201)
+      .send(
+        Helper.ResponseData(
+          201,
+          "Berhasil menambahkan data dosen wali dengan NIP " + NIP,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menambahkan data dosen wali dengan NIP " + NIP,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   UpdateData,
+  CreateDoswal,
   GetDosenWaliByNIP,
   GetDosenWaliByUserId,
   GetDashboardDoswal,
   GetAllDoswal,
+  GetDoswalByKeyword,
+  DeleteDoswal,
 };

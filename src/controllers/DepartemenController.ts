@@ -7,6 +7,8 @@ import uploadImage from "../middleware/UploudImage";
 import PKL from "../db/models/PKL";
 import { Op } from "sequelize";
 import Skripsi from "../db/models/Skripsi";
+import User from "../db/models/User";
+import PasswordHelper from "../helpers/PasswordHelper";
 
 const GetDepartemenByNIP = async (
   req: Request,
@@ -18,12 +20,6 @@ const GetDepartemenByNIP = async (
     const dataDepartemen = await Departemen.findOne({
       where: { NIP: NIP },
     });
-
-    const data = {
-      NIP: dataDepartemen?.NIP,
-      nama: dataDepartemen?.nama,
-      email: dataDepartemen?.email,
-    };
 
     if (!dataDepartemen) {
       return res
@@ -38,7 +34,7 @@ const GetDepartemenByNIP = async (
           200,
           "Berhasil mendapatkan data departemen dengan NIP " + NIP,
           null,
-          data
+          dataDepartemen
         )
       );
   } catch (err: any) {
@@ -551,7 +547,194 @@ const GetDetailRekapStatus = async (
     );
 };
 
+const GetDepartemenByKeyword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { keyword } = req.params;
+
+  try {
+    const dataDepartemen = await Departemen.findAll({
+      where: {
+        [Op.or]: [
+          {
+            NIP: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            nama: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            email: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    if (!dataDepartemen) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Data tidak ditemukan", null, null));
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data departemen dengan keyword " + keyword,
+          null,
+          dataDepartemen
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data departemen dengan keyword " + keyword,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const DeleteDepartemen = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIP } = req.params;
+
+  try {
+    const dataDepartemen = await Departemen.findOne({
+      where: { NIP: NIP },
+    });
+
+    if (!dataDepartemen) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Unauthorized", null, null));
+    }
+
+    await Departemen.destroy({
+      where: { NIP: NIP },
+    });
+
+    await User.destroy({
+      where: { id: dataDepartemen.userId || "" },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menghapus data departemen dengan NIP " + NIP,
+          null,
+          null
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menghapus data departemen dengan NIP " + NIP,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const CreateDepartemen = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIP, nama, email } = req.body;
+
+  try {
+    const dataDepartemen = await Departemen.findOne({
+      where: { NIP: NIP },
+    });
+
+    if (dataDepartemen) {
+      return res
+        .status(409)
+        .send(Helper.ResponseData(409, "NIP sudah terdaftar", null, null));
+    }
+
+    const dataUser = await User.findOne({
+      where: { email: email },
+    });
+
+    if (dataUser) {
+      return res
+        .status(409)
+        .send(Helper.ResponseData(409, "Email sudah terdaftar", null, null));
+    }
+
+    const data = {
+      NIP: NIP,
+      nama: nama,
+      email: email,
+      userId: NIP,
+      username: "",
+    };
+
+    const hashed = await PasswordHelper.PasswrodHashing("12345678");
+    const random = Math.floor(1000 + Math.random() * 9000);
+    const namaTrim: string = nama.replace(/\s/g, "");
+
+    const dataUserDepartemen = {
+      username: namaTrim + random,
+      email: email,
+      password: hashed,
+      active: true,
+      verified: true,
+      roleId: 3,
+    };
+
+    const response = await User.create(dataUserDepartemen);
+    data.userId = response.id;
+    data.username = response.username;
+
+    await Departemen.create(data);
+
+    return res
+      .status(201)
+      .send(
+        Helper.ResponseData(
+          201,
+          "Berhasil membuat data departemen dengan NIP " + NIP,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal membuat data departemen dengan NIP " + NIP,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
+  CreateDepartemen,
   UpdateData,
   GetDepartemenByNIP,
   GetDepartemenByUserId,
@@ -562,4 +745,6 @@ export default {
   GetDetailRekapSevenYearsSkripsi,
   GetRekapStatusMahasiswa,
   GetDetailRekapStatus,
+  GetDepartemenByKeyword,
+  DeleteDepartemen,
 };

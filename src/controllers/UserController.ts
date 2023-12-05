@@ -129,6 +129,29 @@ const RefreshToken = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+const GetUserById = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { id } = req.params;
+    const user = await User.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    return res.status(200).send(Helper.ResponseData(200, "OK", null, user));
+  } catch (error: any) {
+    return res
+      .status(500)
+      .send(Helper.ResponseData(500, "Internal Server Error", error, null));
+  }
+};
+
 const UserDetail = async (req: Request, res: Response): Promise<Response> => {
   try {
     const userEmail = res.locals.userEmail;
@@ -191,4 +214,43 @@ const UserLogout = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-export default { Register, UserLogin, RefreshToken, UserDetail, UserLogout };
+const ResetPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { userId } = req.body;
+    const hashed = await PasswordHelper.PasswrodHashing("12345678");
+    const user = await User.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    await User.update({ password: hashed }, { where: { id: userId } });
+
+    return res
+      .status(200)
+      .send(Helper.ResponseData(200, "Password Reset to 12345678", null, null));
+  } catch (error: any) {
+    return res
+      .status(500)
+      .send(Helper.ResponseData(500, "Internal Server Error", error, null));
+  }
+};
+
+export default {
+  Register,
+  UserLogin,
+  RefreshToken,
+  UserDetail,
+  UserLogout,
+  ResetPassword,
+  GetUserById,
+};

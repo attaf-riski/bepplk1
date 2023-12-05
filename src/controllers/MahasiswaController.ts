@@ -10,6 +10,7 @@ import PKL from "../db/models/PKL";
 import Skripsi from "../db/models/Skripsi";
 import PasswordHelper from "../helpers/PasswordHelper";
 import User from "../db/models/User";
+import fs from "fs";
 
 // create mahasiswa
 const CreateMahasiswa = async (
@@ -185,8 +186,18 @@ const UpdataDataPhoto = async (
 
 const UpdateData = async (req: Request, res: Response): Promise<Response> => {
   const { NIM } = req.params;
-  const { nama, alamat, kabkota, provinsi, jalurMasuk, noHP, email, status } =
-    req.body;
+  const {
+    nama,
+    alamat,
+    kabkota,
+    provinsi,
+    jalurMasuk,
+    noHP,
+    email,
+    status,
+    angkatan,
+    dosenWaliNIP,
+  } = req.body;
 
   try {
     const dataMahasiswa = await Mahasiswa.findOne({
@@ -200,7 +211,7 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
     }
     const data = {
       NIM: NIM,
-      angkatan: dataMahasiswa?.angkatan,
+      angkatan: angkatan,
       nama: nama,
       alamat: alamat,
       kabkota: kabkota,
@@ -211,7 +222,7 @@ const UpdateData = async (req: Request, res: Response): Promise<Response> => {
       status: status,
       photo: dataMahasiswa?.photo,
       userId: dataMahasiswa?.userId,
-      dosenWaliNIP: dataMahasiswa?.dosenWaliNIP,
+      dosenWaliNIP: dosenWaliNIP,
     };
 
     await Mahasiswa.update(data, {
@@ -378,12 +389,12 @@ const GetMahasiswaWithNotVerifiedIRSByBIP = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NIP } = req.params;
+  const { NIP, type } = req.params;
 
   try {
     const dataIRS = await IRS.findAll({
       where: {
-        verified: false,
+        verified: type === "true" ? true : false,
       },
     });
 
@@ -454,12 +465,12 @@ const GetMahasiswaWithNotVerifiedKHSByBIP = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NIP } = req.params;
+  const { NIP, type } = req.params;
 
   try {
     const dataIRS = await KHS.findAll({
       where: {
-        verified: false,
+        verified: type === "true" ? true : false,
       },
     });
 
@@ -530,12 +541,12 @@ const GetMahasiswaWithNotVerifiedPKLByBIP = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NIP } = req.params;
+  const { NIP, type } = req.params;
 
   try {
     const dataIRS = await PKL.findAll({
       where: {
-        verified: false,
+        verified: type === "true" ? true : false,
       },
     });
 
@@ -606,12 +617,12 @@ const GetMahasiswaWithNotVerifiedSkripsiByBIP = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { NIP } = req.params;
+  const { NIP, type } = req.params;
 
   try {
     const dataIRS = await Skripsi.findAll({
       where: {
-        verified: false,
+        verified: type === "true" ? true : false,
       },
     });
 
@@ -779,6 +790,149 @@ const GetColorBox = async (req: Request, res: Response): Promise<Response> => {
     );
 };
 
+const GetMahasiswaByKeyword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { keyword } = req.params;
+
+  try {
+    const dataMahasiswa = await Mahasiswa.findAll({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              {
+                NIM: {
+                  [Op.like]: "%" + keyword + "%",
+                },
+              },
+              {
+                nama: {
+                  [Op.like]: "%" + keyword + "%",
+                },
+              },
+              {
+                angkatan: keyword,
+              },
+              {
+                dosenWaliNIP: keyword,
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (!dataMahasiswa) {
+      return res
+        .status(403)
+        .send(
+          Helper.ResponseData(
+            403,
+            "Unauthorized For Get Data Mahasiwa",
+            null,
+            null
+          )
+        );
+    }
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data mahasiswa",
+          null,
+          dataMahasiswa
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(500, "Gagal mendapatkan data mahasiswa", err, null)
+      );
+  }
+};
+
+const DeleteDataMahasiswa = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+
+  try {
+    const dataMahasiswa = await Mahasiswa.findOne({
+      where: { NIM: NIM },
+    });
+
+    if (!dataMahasiswa) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Unauthorized", null, null));
+    }
+
+    // delete image mahasiswa with fs.unlinkSync
+    if (
+      dataMahasiswa.photo !==
+      "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png"
+    ) {
+      // unlink image dengan alamat seperti ini
+      // http://localhost:5502/images/image-1701671220465.jpeg
+      const image = dataMahasiswa.photo!.split("/");
+      const imageName = image[image.length - 1];
+      fs.unlinkSync("./images/" + imageName);
+    }
+
+    await IRS.destroy({
+      where: { NIM: NIM },
+    });
+
+    await KHS.destroy({
+      where: { NIM: NIM },
+    });
+
+    await PKL.destroy({
+      where: { NIM: NIM },
+    });
+
+    await Skripsi.destroy({
+      where: { NIM: NIM },
+    });
+
+    await User.destroy({
+      where: { id: dataMahasiswa?.userId || "" },
+    });
+
+    await Mahasiswa.destroy({
+      where: { NIM: NIM },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menghapus data mahasiswa dengan NIM " + NIM,
+          null,
+          null
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menghapus data mahasiswa dengan NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateMahasiswa,
   UpdateData,
@@ -791,4 +945,6 @@ export default {
   GetMahasiswaWithNotVerifiedPKLByBIP,
   GetMahasiswaWithNotVerifiedSkripsiByBIP,
   GetColorBox,
+  GetMahasiswaByKeyword,
+  DeleteDataMahasiswa,
 };

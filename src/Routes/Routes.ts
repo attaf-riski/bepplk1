@@ -55,10 +55,30 @@ router.get(
   Authorization.Authenticated,
   UserController.UserDetail
 );
+
+router.get(
+  "/user/getuserbyid/:id",
+  Authorization.Authenticated,
+  UserController.GetUserById
+);
+
 router.get(
   "/user/logout",
   Authorization.Authenticated,
   UserController.UserLogout
+);
+
+router.post(
+  "/user/resetpassword",
+  Authorization.Authenticated,
+  UserController.ResetPassword
+);
+
+router.delete(
+  "/mahasiswa/delete/:NIM",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  MahasiswaController.DeleteDataMahasiswa
 );
 
 // operator
@@ -90,6 +110,82 @@ router.post(
 );
 
 router.get(
+  "/operator/listmahasiswa/:keyword",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  MahasiswaController.GetMahasiswaByKeyword
+);
+
+router.get(
+  "/operator/listmahasiswa/detail/:NIM",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  MahasiswaController.GetMahasiswaByNIM
+);
+
+router.get(
+  "/operator/listdoswal/:keyword",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DoswalController.GetDoswalByKeyword
+);
+
+router.get(
+  "/operator/listdoswal/detail/:NIP",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DoswalController.GetDosenWaliByNIP
+);
+
+router.get(
+  "/operator/listdepartemen/:keyword",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DepartemenController.GetDepartemenByKeyword
+);
+
+router.get(
+  "/operator/listdepartemen/detail/:NIP",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DepartemenController.GetDepartemenByNIP
+);
+
+router.post(
+  "/departemen/update/:NIP",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DepartemenController.UpdateData
+);
+
+router.delete(
+  "/departemen/delete/:NIP",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DepartemenController.DeleteDepartemen
+);
+
+router.post(
+  "/doswal/create",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DoswalController.CreateDoswal
+);
+
+router.post(
+  "/doswal/update/:NIP",
+  Authorization.Authenticated,
+  DoswalController.UpdateData
+);
+
+router.delete(
+  "/doswal/delete/:NIP",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DoswalController.DeleteDoswal
+);
+
+router.get(
   "/mahasiswa/:userid",
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
@@ -99,16 +195,16 @@ router.get(
 router.post(
   "/mahasiswa/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   MahasiswaController.UpdateData
 );
 
 router.post(
   "/mahasiswa/image/:NIM",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM,
+  // Authorization.MahasiswaAutho,
+  // Authorization.MahasiswaNIM,
   MahasiswaController.UpdataDataPhoto
 );
 
@@ -287,7 +383,7 @@ router.get(
 
 // get mahasiswa yang memiliki irs belum diverifikasi dosen wali
 router.get(
-  "/doswal/irs/:NIP",
+  "/doswal/irs/:NIP&:type",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   MahasiswaController.GetMahasiswaWithNotVerifiedIRSByBIP
@@ -295,7 +391,7 @@ router.get(
 
 // get semua IRS yang belum diverifikasi dosen wali
 router.get(
-  "/doswal/listirs/:NIM",
+  "/doswal/listirs/:NIM&:type",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   Authorization.DosenWaliNIPonMahasiswa,
@@ -320,14 +416,14 @@ router.post(
 
 // get semua KHS yang belum diverifikasi dosen wali
 router.get(
-  "/doswal/khs/:NIP",
+  "/doswal/khs/:NIP&:type",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   MahasiswaController.GetMahasiswaWithNotVerifiedKHSByBIP
 );
 
 router.get(
-  "/doswal/listkhs/:NIM",
+  "/doswal/listkhs/:NIM&:type",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   Authorization.DosenWaliNIPonMahasiswa,
@@ -376,7 +472,7 @@ router.post(
 );
 
 router.get(
-  "/doswal/skripsi/:NIP",
+  "/doswal/skripsi/:NIP&:type",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   MahasiswaController.GetMahasiswaWithNotVerifiedSkripsiByBIP
@@ -400,7 +496,7 @@ router.post(
 );
 
 router.get(
-  "/doswal/pkl/:NIP",
+  "/doswal/pkl/:NIP&:type",
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   MahasiswaController.GetMahasiswaWithNotVerifiedPKLByBIP
@@ -411,6 +507,13 @@ router.get(
   Authorization.Authenticated,
   Authorization.DosenWaliAutho,
   MahasiswaController.GetMahasiswaByKeywordAndDoswalNIP
+);
+
+router.get(
+  "/pencarianmahasiswa/departemen/:keyword", //keyword nama atau nim
+  Authorization.Authenticated,
+  Authorization.Departemen,
+  MahasiswaController.GetMahasiswaByKeyword
 );
 
 router.get(
@@ -451,6 +554,13 @@ router.get(
   Authorization.Authenticated,
   Authorization.Departemen,
   DepartemenController.GetDashboardDepartemen
+);
+
+router.post(
+  "/departemen/create",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  DepartemenController.CreateDepartemen
 );
 
 router.get(

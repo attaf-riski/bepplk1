@@ -131,6 +131,14 @@ const CreatePKLScanPKL = async (
         .send(Helper.ResponseData(403, "Data PKL tidak ada", null, null));
     }
 
+    // hapus file lama dengan fs.unlinkSync
+    if (dataPKL.scanBeritaAcara != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataPKL.scanBeritaAcara);
+      fs.unlinkSync(filePath);
+    }
+
     dataPKL.scanBeritaAcara = scanPKL;
 
     await dataPKL.save();
@@ -328,6 +336,14 @@ const CreatePKLScanBeritaAcara = async (
     const data = {
       scanBeritaAcara: scanPKL || "",
     };
+
+    // hapus file lama dengan fs.unlinkSync
+    if (data.scanBeritaAcara != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + data.scanBeritaAcara);
+      fs.unlinkSync(filePath);
+    }
 
     await PKL.update(data, {
       where: {

@@ -144,6 +144,14 @@ const CreateKHSScanKHS = async (
       scanKHS: scanKHS || "",
     };
 
+    // hapus file lama dengan fs.unlinkSync
+    if (dataKHS.scanKHS != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataKHS.scanKHS);
+      fs.unlinkSync(filePath);
+    }
+
     await KHS.update(data, {
       where: {
         [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],

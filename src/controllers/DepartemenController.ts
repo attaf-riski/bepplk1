@@ -9,6 +9,8 @@ import { Op } from "sequelize";
 import Skripsi from "../db/models/Skripsi";
 import User from "../db/models/User";
 import PasswordHelper from "../helpers/PasswordHelper";
+import DosenWali from "../db/models/DosenWali";
+import Operator from "../db/models/Operator";
 
 const GetDepartemenByNIP = async (
   req: Request,
@@ -166,15 +168,19 @@ const GetDashboardDepartemen = async (
     });
 
     const data = {
-      jumlahMahasiswaWali: 0,
+      jumlahMahasiswaAktif: 0,
+      jumlahMahasiswaCuti: 0,
       jumlahMahasiswaLulusPKL: 0,
       jumlahMahasiswaLulusSkripsi: 0,
+      jumlahMahasiswaInformatika: 0,
+      jumlahDosenWaliInformatika: 0,
+      jumlahOperatorInformatika: 0,
     };
 
     // tampilkan jumlah mahasiswa
     const return1 = await Mahasiswa.count({});
 
-    data.jumlahMahasiswaWali = return1;
+    data.jumlahMahasiswaInformatika = return1;
 
     // tampilkan jumlah mahasiswa yang telah lulus PKL
     const return2 = await PKL.count({
@@ -189,6 +195,31 @@ const GetDashboardDepartemen = async (
     });
 
     data.jumlahMahasiswaLulusSkripsi = return3;
+
+    // tampilkan jumlah mahasiswa yang aktif
+    const return4 = await Mahasiswa.count({
+      where: { status: "Aktif" },
+    });
+
+    data.jumlahMahasiswaAktif = return4;
+
+    // tampilkan jumlah mahasiswa yang cuti
+
+    const return5 = await Mahasiswa.count({
+      where: { status: "Cuti" },
+    });
+
+    data.jumlahMahasiswaCuti = return5;
+
+    // tampilkan jumlah dosen wali informatika
+    const return6 = await DosenWali.count({});
+
+    data.jumlahDosenWaliInformatika = return6;
+
+    // tampilkan jumlah operator informatika
+    const return7 = await Operator.count({});
+
+    data.jumlahOperatorInformatika = return7;
 
     if (!dataDepartemen) {
       return res

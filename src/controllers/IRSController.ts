@@ -139,6 +139,14 @@ const CreateIRSScanIRS = async (
       scanIRS: scanIRS || "",
     };
 
+    // hapus file lama dengan fs.unlinkSync
+    if (dataIRS.scanIRS != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataIRS.scanIRS);
+      fs.unlinkSync(filePath);
+    }
+
     await IRS.update(data, {
       where: {
         [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],

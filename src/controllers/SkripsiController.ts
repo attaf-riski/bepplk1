@@ -130,6 +130,14 @@ const CreateSkripsiScanSkripsi = async (
         .send(Helper.ResponseData(403, "Data Skripsi tidak ada", null, null));
     }
 
+    // hapus file lama dengan fs.unlinkSync
+    if (dataSkripsi.scanBeritaAcara != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataSkripsi.scanBeritaAcara);
+      fs.unlinkSync(filePath);
+    }
+
     dataSkripsi.scanBeritaAcara = scanSkripsi;
 
     await dataSkripsi.save();
@@ -332,6 +340,14 @@ const CreateSkripsiScanBeritaAcara = async (
     const data = {
       scanBeritaAcara: scanSkripsi || "",
     };
+
+    // hapus file lama dengan fs.unlinkSync
+    if (data.scanBeritaAcara != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + data.scanBeritaAcara);
+      fs.unlinkSync(filePath);
+    }
 
     await Skripsi.update(data, {
       where: {

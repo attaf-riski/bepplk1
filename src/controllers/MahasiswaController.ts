@@ -11,6 +11,7 @@ import Skripsi from "../db/models/Skripsi";
 import PasswordHelper from "../helpers/PasswordHelper";
 import User from "../db/models/User";
 import fs from "fs";
+import DosenWali from "../db/models/DosenWali";
 
 // create mahasiswa
 const CreateMahasiswa = async (
@@ -162,6 +163,18 @@ const UpdataDataPhoto = async (
     const data = {
       photo: "http://localhost:5502/images/" + req.file.filename,
     };
+
+    // delete image mahasiswa with fs.unlinkSync
+    if (
+      dataMahasiswa.photo !==
+      "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Transparent-Image.png"
+    ) {
+      // unlink image dengan alamat seperti ini
+      // http://localhost:5502/images/image-1701671220465.jpeg
+      const image = dataMahasiswa.photo!.split("/");
+      const imageName = image[image.length - 1];
+      fs.unlinkSync("./images/" + imageName);
+    }
 
     await Mahasiswa.update(data, {
       where: { NIM: NIM },
@@ -933,6 +946,92 @@ const DeleteDataMahasiswa = async (
   }
 };
 
+const GetDashboardMahasiswa = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+
+  const data = {
+    DosenWali: "",
+    StatusAkedemik: "",
+    IPK: 0,
+    SKSk: 0,
+    Skripsi: "Sudah",
+    PKL: "Belum",
+  };
+
+  try {
+    const dataMahasiswa = await Mahasiswa.findOne({
+      where: { NIM: NIM },
+    });
+
+    if (!dataMahasiswa) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Unauthorized", null, null));
+    }
+
+    const doswal = await DosenWali.findOne({
+      where: {
+        NIP: dataMahasiswa.dosenWaliNIP,
+      },
+    });
+
+    const dataKHS = await KHS.findAll({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    data.IPK = dataKHS.length !== 0 ? dataKHS[dataKHS.length - 1].IPK : 0;
+
+    for (let i = 0; i < dataKHS.length; i++) {
+      data.SKSk += dataKHS[i].jumlahSksSemester;
+    }
+
+    const dataPKL = await PKL.findOne({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    const dataSkripsi = await Skripsi.findOne({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    data.DosenWali = doswal?.nama || "";
+    data.StatusAkedemik = dataMahasiswa.status || "";
+
+    data.PKL = dataPKL !== null ? "Sudah" : "Belum";
+    data.Skripsi = dataSkripsi !== null ? "Sudah" : "Belum";
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data dashboard mahasiswa dengan NIM " + NIM,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data dashboard mahasiswa dengan NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateMahasiswa,
   UpdateData,
@@ -947,4 +1046,5 @@ export default {
   GetColorBox,
   GetMahasiswaByKeyword,
   DeleteDataMahasiswa,
+  GetDashboardMahasiswa,
 };

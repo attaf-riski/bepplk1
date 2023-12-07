@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 import util from "util";
-const maxSize = 2 * 1024 * 1024;
+const maxSize = 2 * 1024 * 1024 * 1024;
 
 // konfigurasi multer
 let storage = multer.diskStorage({

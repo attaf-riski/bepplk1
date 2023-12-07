@@ -245,6 +245,50 @@ const ResetPassword = async (
   }
 };
 
+const UpdatePassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { userId, oldPassword, newPassword } = req.body;
+
+    const user = await User.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    const matched = await PasswordHelper.PasswordCompare(
+      oldPassword,
+      user.password
+    );
+
+    if (!matched) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    const hashed = await PasswordHelper.PasswrodHashing(newPassword);
+
+    await User.update({ password: hashed }, { where: { id: userId } });
+
+    return res
+      .status(200)
+      .send(Helper.ResponseData(200, "Password Updated", null, null));
+  } catch (error: any) {
+    return res
+      .status(500)
+      .send(Helper.ResponseData(500, "Internal Server Error", error, null));
+  }
+};
+
 export default {
   Register,
   UserLogin,
@@ -253,4 +297,5 @@ export default {
   UserLogout,
   ResetPassword,
   GetUserById,
+  UpdatePassword,
 };

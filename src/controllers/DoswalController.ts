@@ -166,10 +166,73 @@ const GetDashboardDoswal = async (
     });
 
     const data = {
+      jumlahAntrianVerifikasiIRS: 0,
+      jumlahAntrianVerifikasiKHS: 0,
+      jumlahAntrianVerifikasiPKL: 0,
+      jumlahAntrianVerifikasiSkripsi: 0,
       jumlahMahasiswaWali: 0,
       jumlahMahasiswaLulusPKL: 0,
       jumlahMahasiswaLulusSkripsi: 0,
     };
+
+    // tampilkan jumlah antrian verifikasi IRS
+    const return0 = await Mahasiswa.findAll({
+      where: {
+        dosenWaliNIP: NIP,
+      },
+    });
+
+    // cari IRS yang belum diverifikasi hasil return0
+    for (let i = 0; i < return0.length; i++) {
+      const dataIRS = await IRS.count({
+        where: {
+          [Op.and]: [{ NIM: return0[i].NIM }, { verified: false }],
+        },
+      });
+
+      if (dataIRS) {
+        data.jumlahAntrianVerifikasiIRS += dataIRS;
+      }
+    }
+
+    // cari KHS yang belum diverifikasi hasil return0
+    for (let i = 0; i < return0.length; i++) {
+      const dataKHS = await IRS.count({
+        where: {
+          [Op.and]: [{ NIM: return0[i].NIM }, { verified: false }],
+        },
+      });
+
+      if (dataKHS) {
+        data.jumlahAntrianVerifikasiKHS += dataKHS;
+      }
+    }
+
+    // cari PKL yang diverifikasi hasil return0
+    for (let i = 0; i < return0.length; i++) {
+      const dataPKL = await PKL.count({
+        where: {
+          [Op.and]: [{ NIM: return0[i].NIM }, { verified: false }],
+        },
+      });
+
+      if (dataPKL) {
+        data.jumlahAntrianVerifikasiPKL += dataPKL;
+      }
+    }
+
+    // cari Skripsi yang diverifikasi hasil return0
+    for (let i = 0; i < return0.length; i++) {
+      const dataSkripsi = await Skripsi.count({
+        where: {
+          [Op.and]: [{ NIM: return0[i].NIM }, { verified: false }],
+        },
+      });
+
+      if (dataSkripsi) {
+        data.jumlahAntrianVerifikasiSkripsi += dataSkripsi;
+      }
+    }
 
     // tampilkan jumlah mahasiswa yang diwali
     const return1 = await Mahasiswa.count({

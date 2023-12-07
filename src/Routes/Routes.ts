@@ -74,6 +74,12 @@ router.post(
   UserController.ResetPassword
 );
 
+router.post(
+  "/user/updatepassword",
+  Authorization.Authenticated,
+  UserController.UpdatePassword
+);
+
 router.delete(
   "/mahasiswa/delete/:NIM",
   Authorization.Authenticated,
@@ -133,7 +139,7 @@ router.get(
 router.get(
   "/operator/listdoswal/detail/:NIP",
   Authorization.Authenticated,
-  Authorization.Operator,
+  // Authorization.Operator,
   DoswalController.GetDosenWaliByNIP
 );
 
@@ -147,14 +153,14 @@ router.get(
 router.get(
   "/operator/listdepartemen/detail/:NIP",
   Authorization.Authenticated,
-  Authorization.Operator,
+  // Authorization.Operator,
   DepartemenController.GetDepartemenByNIP
 );
 
 router.post(
   "/departemen/update/:NIP",
   Authorization.Authenticated,
-  Authorization.Operator,
+  // Authorization.Operator,
   DepartemenController.UpdateData
 );
 
@@ -190,6 +196,13 @@ router.get(
   Authorization.Authenticated,
   Authorization.MahasiswaAutho,
   MahasiswaController.GetMahasiswaByUserId
+);
+
+router.get(
+  "/dashboardmahasiswa/:NIM",
+  Authorization.Authenticated,
+  Authorization.MahasiswaAutho,
+  MahasiswaController.GetDashboardMahasiswa
 );
 
 router.post(
@@ -519,8 +532,8 @@ router.get(
 router.get(
   "/pencarianmahasiswa/detailmahasiswa/:NIM",
   Authorization.Authenticated,
-  Authorization.DosenWaliAutho,
-  Authorization.DosenWaliNIPonMahasiswa,
+  // Authorization.DosenWaliAutho,
+  // Authorization.DosenWaliNIPonMahasiswa,
   MahasiswaController.GetMahasiswaByNIM
 );
 
@@ -528,7 +541,7 @@ router.get(
 router.get(
   "/dashboarddoswal/colorbox/:NIM",
   Authorization.Authenticated,
-  Authorization.DosenWaliAutho,
+  // Authorization.DosenWaliAutho,
   MahasiswaController.GetColorBox
 );
 

@@ -207,4 +207,133 @@ const GetOperatorByUserId = async (
   }
 };
 
-export default { UploudCSV, DownloadCSV, DeleteCSV, GetOperatorByUserId };
+const GetDashboardOperator = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { userid } = req.params;
+
+  const data = {
+    jumlahAkunMahasiswa: 0,
+    jumlahAkunDoswal: 0,
+    jumlahAkunOperator: 0,
+  };
+
+  try {
+    const dataMahasiswa = await User.count({
+      where: { roleId: 5 },
+    });
+
+    const dataDosenWali = await User.count({
+      where: { roleId: 4 },
+    });
+
+    const dataDepartemen = await User.count({
+      where: { roleId: 3 },
+    });
+
+    data.jumlahAkunMahasiswa = dataMahasiswa;
+    data.jumlahAkunDoswal = dataDosenWali;
+    data.jumlahAkunOperator = dataDepartemen;
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mendapatkan data operator dengan userId " + userid,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mendapatkan data  dengan userid " + userid,
+          err,
+          null
+        )
+      );
+  }
+};
+
+const GetOperatorByNIP = async (req: Request, res: Response) => {
+  const { NIP } = req.params;
+
+  const operator = await Operator.findOne({
+    where: { NIP: NIP },
+  });
+
+  if (!operator) {
+    return res
+      .status(404)
+      .send(
+        Helper.ResponseData(404, "Data operator tidak ditemukan", null, null)
+      );
+  }
+
+  return res
+    .status(200)
+    .send(Helper.ResponseData(200, "Sukses", null, operator));
+};
+
+const UpdateData = async (req: Request, res: Response): Promise<Response> => {
+  const { NIP } = req.params;
+  const { nama, email } = req.body;
+
+  try {
+    const dataDosenWali = await Operator.findOne({
+      where: { NIP: NIP },
+    });
+
+    if (!dataDosenWali) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Unauthorized", null, null));
+    }
+    const data = {
+      NIP: NIP,
+      nama: nama,
+      email: email,
+    };
+
+    await Operator.update(data, {
+      where: { NIP: NIP },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil mengubah data operator dengan NIP " + NIP,
+          null,
+          data
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal mengubah data operator dengan NIP " + NIP,
+          err,
+          null
+        )
+      );
+  }
+};
+
+export default {
+  UploudCSV,
+  DownloadCSV,
+  DeleteCSV,
+  GetOperatorByUserId,
+  GetDashboardOperator,
+  GetOperatorByNIP,
+  UpdateData,
+};

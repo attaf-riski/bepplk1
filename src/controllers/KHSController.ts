@@ -488,6 +488,75 @@ const GetKHSAllByNIMNotVerified = async (
   }
 };
 
+const DeleteKHSByNIMSemester = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM, semesterAktif } = req.params;
+  try {
+    const dataKHS = await KHS.findOne({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    if (!dataKHS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data KHS untuk semester " + semesterAktif + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    // hapus scan KHS menggunakna fs.unlinkSync
+    if (dataKHS.scanKHS != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataKHS.scanKHS);
+      fs.unlinkSync(filePath);
+    }
+
+    await KHS.destroy({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menghapus data KHS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          null,
+          null
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menghapus data KHS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateDataKHS,
   UpdateDataKHS,
@@ -496,4 +565,5 @@ export default {
   CreateKHSScanKHS,
   approveKHS,
   GetKHSAllByNIMNotVerified,
+  DeleteKHSByNIMSemester,
 };

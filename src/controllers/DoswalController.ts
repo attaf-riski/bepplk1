@@ -9,6 +9,7 @@ import { Op } from "sequelize";
 import Skripsi from "../db/models/Skripsi";
 import User from "../db/models/User";
 import PasswordHelper from "../helpers/PasswordHelper";
+import KHS from "../db/models/KHS";
 
 const GetDosenWaliByNIP = async (
   req: Request,
@@ -197,7 +198,7 @@ const GetDashboardDoswal = async (
 
     // cari KHS yang belum diverifikasi hasil return0
     for (let i = 0; i < return0.length; i++) {
-      const dataKHS = await IRS.count({
+      const dataKHS = await KHS.count({
         where: {
           [Op.and]: [{ NIM: return0[i].NIM }, { verified: false }],
         },

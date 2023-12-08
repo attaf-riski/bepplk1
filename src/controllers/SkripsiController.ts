@@ -430,6 +430,64 @@ const approveSkripsi = async (
   }
 };
 
+const DeleteSkripsiByNIM = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+  try {
+    const dataSkripsi = await Skripsi.findOne({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    if (!dataSkripsi) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(404, "Data Skripsi untuk tidak ada", null, null)
+        );
+    }
+
+    // hapus file lama dengan fs.unlinkSync
+    if (dataSkripsi.scanBeritaAcara != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataSkripsi.scanBeritaAcara);
+      fs.unlinkSync(filePath);
+    }
+
+    await Skripsi.destroy({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil delete data Skripsi semester untuk NIM " + NIM,
+          null,
+          dataSkripsi
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal delete data Skripsi semester untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateDataSkripsi,
   UpdateDataSkripsi,
@@ -437,4 +495,5 @@ export default {
   CreateSkripsiScanSkripsi,
   CreateSkripsiScanBeritaAcara,
   approveSkripsi,
+  DeleteSkripsiByNIM,
 };

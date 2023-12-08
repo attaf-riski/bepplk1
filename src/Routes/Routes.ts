@@ -12,6 +12,8 @@ import PKLController from "../controllers/PKLController";
 import SkripsiController from "../controllers/SkripsiController";
 import DoswalController from "../controllers/DoswalController";
 import DepartemenController from "../controllers/DepartemenController";
+import IRS from "../db/models/IRS";
+import KHS from "../db/models/KHS";
 
 const router = express.Router();
 
@@ -263,6 +265,12 @@ router.get(
   IRSController.GetIRSAllByNIM
 );
 
+router.delete(
+  "/irs/delete/:NIM&:semesterAktif",
+  Authorization.Authenticated,
+  IRSController.DeleteIRSByNIMSemester
+);
+
 // khs
 router.post(
   "/khs/:NIM",
@@ -304,11 +312,10 @@ router.get(
   KHSController.GetKHSAllByNIM
 );
 
-router.get(
-  "/khs/pdf/:NIM&:semesterAktif",
+router.delete(
+  "/khs/delete/:NIM&:semesterAktif",
   Authorization.Authenticated,
-  Authorization.MahasiswaAutho,
-  Authorization.MahasiswaNIM
+  KHSController.DeleteKHSByNIMSemester
 );
 
 // PKL
@@ -344,6 +351,12 @@ router.get(
   PKLController.GetPKLByNIM
 );
 
+router.delete(
+  "/pkl/delete/:NIM",
+  Authorization.Authenticated,
+  PKLController.DeletePKLByNIM
+);
+
 // skripsi
 router.post(
   "/skripsi/:NIM",
@@ -375,6 +388,12 @@ router.get(
   // Authorization.MahasiswaAutho,
   // Authorization.MahasiswaNIM,
   SkripsiController.GetSkripsiByNIM
+);
+
+router.delete(
+  "/skripsi/delete/:NIM",
+  Authorization.Authenticated,
+  SkripsiController.DeleteSkripsiByNIM
 );
 
 // verifikasi dosen wali thd data mahasiswa wali
@@ -555,10 +574,23 @@ router.get(
 
 // operator dashboard
 router.get(
-  "/operator/:userid",
+  "/dashboardoperator",
   Authorization.Authenticated,
   Authorization.Operator,
-  OperatorController.GetOperatorByUserId
+  OperatorController.GetDashboardOperator
+);
+
+router.get(
+  "/operator/listoperator/detail/:NIP",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  OperatorController.GetOperatorByNIP
+);
+
+router.post(
+  "/operator/update/:NIP",
+  Authorization.Authenticated,
+  OperatorController.UpdateData
 );
 
 // departemen dashboard
@@ -574,6 +606,13 @@ router.post(
   Authorization.Authenticated,
   Authorization.Operator,
   DepartemenController.CreateDepartemen
+);
+
+router.get(
+  "/operator/:userid",
+  Authorization.Authenticated,
+  Authorization.Operator,
+  OperatorController.GetOperatorByUserId
 );
 
 router.get(

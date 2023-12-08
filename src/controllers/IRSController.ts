@@ -486,6 +486,75 @@ const GetIRSAllByNIMNotVerified = async (
   }
 };
 
+const DeleteIRSByNIMSemester = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM, semesterAktif } = req.params;
+  try {
+    const dataIRS = await IRS.findOne({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    if (!dataIRS) {
+      return res
+        .status(404)
+        .send(
+          Helper.ResponseData(
+            404,
+            "Data IRS untuk semester " + semesterAktif + " tidak ada",
+            null,
+            null
+          )
+        );
+    }
+
+    // hapus scan IRS
+    if (dataIRS.scanIRS != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataIRS.scanIRS);
+      fs.unlinkSync(filePath);
+    }
+
+    await IRS.destroy({
+      where: {
+        [Op.and]: [{ NIM: NIM }, { semesterAktif: semesterAktif }],
+      },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menghapus data IRS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          null,
+          null
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menghapus data IRS semester " +
+            semesterAktif +
+            " untuk NIM " +
+            NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   CreateDataIRS,
   UpdateDataIRS,
@@ -494,4 +563,5 @@ export default {
   CreateIRSScanIRS,
   approveIRS,
   GetIRSAllByNIMNotVerified,
+  DeleteIRSByNIMSemester,
 };

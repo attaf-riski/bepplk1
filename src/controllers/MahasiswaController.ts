@@ -981,6 +981,7 @@ const GetDashboardMahasiswa = async (
     const dataKHS = await KHS.findAll({
       where: {
         NIM: NIM,
+        verified: true,
       },
     });
 
@@ -993,12 +994,14 @@ const GetDashboardMahasiswa = async (
     const dataPKL = await PKL.findOne({
       where: {
         NIM: NIM,
+        verified: true,
       },
     });
 
     const dataSkripsi = await Skripsi.findOne({
       where: {
         NIM: NIM,
+        verified: true,
       },
     });
 

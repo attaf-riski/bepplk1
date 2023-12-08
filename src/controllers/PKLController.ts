@@ -470,6 +470,62 @@ const GetPKLByNIMNotVerified = async (
   }
 };
 
+const DeletePKLByNIM = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { NIM } = req.params;
+  try {
+    const dataPKL = await PKL.findOne({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    if (!dataPKL) {
+      return res
+        .status(404)
+        .send(Helper.ResponseData(404, "Data PKL untuk tidak ada", null, null));
+    }
+
+    // hapus file lama dengan fs.unlinkSync
+    if (dataPKL.scanBeritaAcara != "") {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join("./pdf/" + dataPKL.scanBeritaAcara);
+      fs.unlinkSync(filePath);
+    }
+
+    await PKL.destroy({
+      where: {
+        NIM: NIM,
+      },
+    });
+
+    return res
+      .status(200)
+      .send(
+        Helper.ResponseData(
+          200,
+          "Berhasil menghapus data PKL semester untuk NIM " + NIM,
+          null,
+          null
+        )
+      );
+  } catch (err: any) {
+    return res
+      .status(500)
+      .send(
+        Helper.ResponseData(
+          500,
+          "Gagal menghapus data PKL semester untuk NIM " + NIM,
+          err,
+          null
+        )
+      );
+  }
+};
+
 export default {
   approvePKL,
   CreateDataPKL,
@@ -478,4 +534,5 @@ export default {
   CreatePKLScanPKL,
   CreatePKLScanBeritaAcara,
   GetPKLByNIMNotVerified,
+  DeletePKLByNIM,
 };
